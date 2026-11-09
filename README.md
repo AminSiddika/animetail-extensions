@@ -8,7 +8,11 @@ An Aniyomi/Animetail-compatible extension repository ("library") with a self-hos
 |---|---|---|
 | Watch Hentai | `extension/` | series + episodes, local proxy for the MP4s |
 | HentaiCity | `extension-hentaicity/` | video-per-entry, direct MP4 + HLS |
-| MuchoHentai | `extension-muchohentai/` | video-per-entry, HLS via `tmncdn.io` |
+| MuchoHentai | `extension-muchohentai/` | video-per-entry, HLS via `tmncdn.io` (Cloudflare) |
+| Ohentai | `extension-ohentai/` | video-per-entry, BunnyCDN token MP4s (Cloudflare) |
+| HentaiPlay | `extension-hentaiplay/` | video-per-entry, direct MP4 |
+
+Cloudflare-protected sites (`muchohentai.com`, `ohentai.org`) rely on the host app's Cloudflare/WebView interceptor; the first request may show a challenge.
 
 `animeidhentai.com` is **not** included: its player (`nhplayer.com`) runs a proof-of-work + browser-fingerprint gate whose `get-video-url-v2.php` rejects non-browser clients (`{"error":"Access denied","code":"V5"}`). Details/search could be scraped, but video playback would not work.
 
@@ -16,6 +20,8 @@ An Aniyomi/Animetail-compatible extension repository ("library") with a self-hos
 extension/                          Watch Hentai (series + episodes)
 extension-hentaicity/               HentaiCity (video per entry)
 extension-muchohentai/              MuchoHentai (video per entry)
+extension-ohentai/                  Ohentai (video per entry)
+extension-hentaiplay/               HentaiPlay (video per entry)
   src/main/AndroidManifest.xml      extension metadata (class, NSFW flag)
   src/main/java/.../                the scraper
   src/main/res/mipmap-*/            launcher icons
