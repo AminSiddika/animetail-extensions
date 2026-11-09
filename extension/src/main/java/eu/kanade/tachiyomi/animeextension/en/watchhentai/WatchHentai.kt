@@ -10,12 +10,17 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
+import fi.iki.elonen.NanoHTTPD as Httpd
 import okhttp3.Headers
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import java.io.Closeable
+import java.io.FilterInputStream
+import java.io.InputStream
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -68,6 +73,11 @@ class WatchHentai : AnimeHttpSource() {
             title = doc.selectFirst("div.tv-single-hero h1")?.text().orEmpty()
             thumbnail_url = doc.selectFirst("div.tv-single-hero div.poster img")?.imageUrl()
             genre = doc.select("div.sgeneros a").joinToString(", ") { it.text() }
+            author = doc.select("div.tv-about-field").firstOrNull { field ->
+                field.selectFirst("span.tv-about-field__label")
+                    ?.text()
+                    ?.equals("Studio", ignoreCase = true) == true
+            }?.selectFirst("span.tv-about-field__value")?.text()
             description = doc.selectFirst("div.tv-single-synopsis__body")
                 ?.select("p")
                 ?.joinToString("\n\n") { it.text() }
@@ -123,7 +133,145 @@ class WatchHentai : AnimeHttpSource() {
         val mediaUrl = jsonLdMediaUrl(playerDoc) ?: decodeMediaUrl(playerDoc.html())
         if (mediaUrl.isNullOrBlank()) return emptyList()
 
-        return listOf(Video(mediaUrl, "MP4", mediaUrl, headers = videoHeaders))
+        // Serve the mp4 through the in-extension proxy so the Referer/UA are always sent,
+        // then also expose the direct link as a fallback.
+        val proxied = proxyUrl(mediaUrl)
+        val videos = mutableListOf<Video>()
+        if (proxied != mediaUrl) {
+            videos += Video(proxied, "Proxy", proxied, headers = videoHeaders)
+        }
+        videos += Video(mediaUrl, "Direct", mediaUrl, headers = videoHeaders)
+        return videos
+    }
+
+    // -------------------------------------------------------------- proxy
+
+    /**
+     * Starts (once) a local NanoHTTPD server and returns a URL whose path carries the
+     * base64url-encoded remote mp4. Every request is replayed upstream with the headers
+     * the host needs, including Range requests so seeking works.
+     */
+    @Synchronized
+    private fun proxyUrl(target: String): String {
+        val port = runCatching {
+            if (proxy == null) {
+                VideoProxy(client, "$baseUrl/").also {
+                    it.start(5000, true)
+                    proxy = it
+                    proxyPort = it.listeningPort
+                }
+            }
+            proxyPort
+        }.getOrNull() ?: return target
+
+        val encoded = Base64.encodeToString(
+            target.toByteArray(Charsets.UTF_8),
+            Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING,
+        )
+        return "http://127.0.0.1:$port/v/$encoded"
+    }
+
+    private class VideoProxy(
+        private val client: OkHttpClient,
+        private val referer: String,
+    ) : Httpd(0) {
+
+        override fun serve(session: Httpd.IHTTPSession): Httpd.Response {
+            val encoded = session.uri.substringAfterLast('/')
+            val target = runCatching {
+                String(
+                    Base64.decode(
+                        encoded,
+                        Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING,
+                    ),
+                    Charsets.UTF_8,
+                )
+            }.getOrNull()
+
+            if (target.isNullOrBlank() || !target.startsWith("http")) {
+                return newFixedLengthResponse(
+                    Httpd.Response.Status.BAD_REQUEST,
+                    MIME_TEXT,
+                    "bad target",
+                )
+            }
+
+            val request = Request.Builder()
+                .url(target)
+                .header("Referer", referer)
+                .header("User-Agent", USER_AGENT)
+
+            session.headers["range"]?.let { request.header("Range", it) }
+
+            val upstream = runCatching {
+                client.newCall(request.build()).execute()
+            }.getOrNull() ?: return newFixedLengthResponse(
+                Httpd.Response.Status.INTERNAL_ERROR,
+                MIME_TEXT,
+                "upstream error",
+            )
+
+            val body = upstream.body
+            if (body == null || upstream.code !in 200..299) {
+                val code = upstream.code
+                val range = upstream.header("Content-Range")
+                upstream.close()
+                val response = newFixedLengthResponse(
+                    if (code == 416) {
+                        Httpd.Response.Status.RANGE_NOT_SATISFIABLE
+                    } else {
+                        Httpd.Response.Status.INTERNAL_ERROR
+                    },
+                    MIME_TEXT,
+                    "",
+                )
+                range?.let { response.addHeader("Content-Range", it) }
+                return response
+            }
+
+            val status = if (upstream.code == 206) {
+                Httpd.Response.Status.PARTIAL_CONTENT
+            } else {
+                Httpd.Response.Status.OK
+            }
+            val mime = upstream.header("Content-Type") ?: "video/mp4"
+            val length = body.contentLength()
+
+            val response = if (length >= 0) {
+                newFixedLengthResponse(
+                    status,
+                    mime,
+                    ClosingStream(body.byteStream(), upstream),
+                    length,
+                )
+            } else {
+                newChunkedResponse(status, mime, ClosingStream(body.byteStream(), upstream))
+            }
+
+            upstream.header("Content-Range")?.let { response.addHeader("Content-Range", it) }
+            response.addHeader("Accept-Ranges", "bytes")
+            return response
+        }
+
+        private class ClosingStream(
+            input: InputStream,
+            private val closeable: Closeable,
+        ) : FilterInputStream(input) {
+            override fun close() {
+                try {
+                    super.close()
+                } finally {
+                    closeable.close()
+                }
+            }
+        }
+
+        private companion object {
+            const val MIME_TEXT = "text/plain"
+            const val USER_AGENT =
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+        }
     }
 
     // ---------------------------------------------------------------- helper
@@ -210,6 +358,12 @@ class WatchHentai : AnimeHttpSource() {
     }
 
     companion object {
+        @Volatile
+        private var proxy: VideoProxy? = null
+
+        @Volatile
+        private var proxyPort: Int = 0
+
         private val DATE_FORMAT = SimpleDateFormat("MMM. dd, yyyy", Locale.ENGLISH)
         private val EPISODE_NUMBER = Regex("""Episode\s+(\d+(?:\.\d+)?)""", RegexOption.IGNORE_CASE)
         private val PAGE_STATUS = Regex("""Page\s+(\d+)\s+of\s+(\d+)""")

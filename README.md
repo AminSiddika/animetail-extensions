@@ -29,7 +29,10 @@ signingkey.jks                      signing key (gitignored — back it up!)
 | Episode | `/videos/<slug>/` inside `#episodes a.tv-ep-card-link` |
 | Video | `[data-primary-player-url]` → player page → JSON-LD `contentUrl`, with base64/XOR fallback |
 
-The MP4 files on `hstorage.xyz` are hotlink-protected and return **403** without a `Referer: https://watchhentai.net/` header, so the extension attaches that header to every `Video`.
+The MP4 files on `hstorage.xyz` are hotlink-protected and return **403** without a `Referer: https://watchhentai.net/` header, so the extension does two things:
+
+1. Attaches that header to every `Video` (for the player's own HTTP stack).
+2. Serves the MP4 through a **local NanoHTTPD proxy** started inside the extension (`http://127.0.0.1:<port>/v/<base64url>`), which replays every request upstream with the Referer, a browser UA and the original `Range` header. This is what makes seeking work and keeps playback independent of how the host app handles per-video headers. A "Direct" entry is still exposed as a fallback.
 
 The player page also obfuscates its JW Player source. The fallback decoder mirrors the site's `whDecodeMediaUrl`: base64url → XOR each byte with `(13 + i % 17) & 0xFF` → reverse → base64 decode.
 
