@@ -76,7 +76,7 @@ class HentaiHavenCom : AnimeHttpSource() {
         return SAnime.create().apply {
             title = doc.selectFirst("h1")?.text()?.trim().orEmpty()
             thumbnail_url = doc.selectFirst("meta[property=og:image]")?.attr("content")
-            genre = doc.select("a[href*='/genre/']")
+            genre = doc.select("div.single_data a[href*='/genre/']")
                 .map { it.text().trim() }
                 .filter { it.isNotEmpty() }
                 .distinct()

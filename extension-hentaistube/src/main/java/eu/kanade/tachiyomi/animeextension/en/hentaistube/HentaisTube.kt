@@ -77,7 +77,7 @@ class HentaisTube : AnimeHttpSource() {
                 ?: doc.selectFirst("meta[property=og:title]")?.attr("content")?.trim().orEmpty()
             thumbnail_url = doc.selectFirst("meta[property=og:image]")?.attr("content")
                 ?: doc.selectFirst("#single .poster img")?.absUrl("src")
-            genre = doc.select("#single .sgeneros a[href^='/genre/']")
+            genre = doc.select("#single .sgeneros a[href*='/genre/']")
                 .map { it.text().trim() }
                 .filter { it.isNotEmpty() }
                 .distinct()

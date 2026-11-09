@@ -89,7 +89,7 @@ class HanimeHentai : AnimeHttpSource() {
                 ?: doc.selectFirst("h1")?.text()?.trim().orEmpty()
             thumbnail_url = doc.selectFirst("meta[property=og:image]")?.attr("content")
                 ?: doc.selectFirst("div.hentai_cover img")?.absUrl("src")
-            genre = doc.select("div.single_data a[rel=tag], div.terms_list a[rel=tag]")
+            genre = doc.select("div.single_data a[rel=tag]")
                 .map { it.text().trim() }
                 .filter { it.isNotEmpty() }
                 .distinct()
