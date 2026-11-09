@@ -59,6 +59,8 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - NekoPoi` | `extension-nekopoi/` | `...en.nekopoi` | `https://nekopoi.care` | 14.1 |
 | `@JalebiBae - MundoHentai` | `extension-mundohentai/` | `...en.mundohentai` | `https://mundohentai.net` | 14.1 |
 | `@JalebiBae - Hanime.red` | `extension-hanimered/` | `...en.hanimered` | `https://hanime.red` | 14.1 |
+| `@JalebiBae - Rule34Video` | `extension-rule34video/` | `...en.rule34video` | `https://rule34video.com` | 14.1 |
+| `@JalebiBae - HentaiHaven.xxx` | `extension-hentaihavenxxx/` | `...en.hentaihavenxxx` | `https://hentaihaven.xxx` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -110,6 +112,8 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | NekoPoi | `446061740949428455` |
 | MundoHentai | `805069891989744991` |
 | Hanime.red | `5375457633777705498` |
+| Rule34Video | `1031421854898827454` |
+| HentaiHaven.xxx | `746394674563039269` |
 ---
 
 ## Scraping notes per site
@@ -396,6 +400,24 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Cards `img.frame-img` → parent `a` with root episode slug
 - Detail `/<slug>-episode-N`; tags `/tag/`
 - Video: `nhplayer.com/v/<token>` iframe (same nhplayer resolver as HentaiKing).
+
+### Rule34Video (KVS)
+- Latest `/latest-updates/`, `/latest-updates/N/`; search `/search/<q>/`, paged `?page=N`
+- Cards `a[href^=https://rule34video.com/video/]`; detail flashvars
+- Video: `video_url` (360p), `video_alt_url` (480p), `video_alt_url2` (720p), `video_alt_url3` (1080p) — direct MP4.
+
+### HentaiHaven.xxx (Next.js)
+- Latest/popular `/browse/trending/`, `/browse/trending/page/N/`; search `/?s=<q>`
+- Series `/watch/<slug>/`; episodes `/watch/<slug>/episode-N/`
+- Episode HTML contains a direct HLS `<source … octopusmanifest.org/…/playlist.m3u8>` (also JSON-LD `contentUrl`); no headers.
+
+### More verified-active candidates (not added yet)
+Homepages returned 200 with real content on 2026-11-09:
+- `hanime.tv` — new guest API (`guest.freeanimehentai.net`) is Cloudflare-gated for browse/video.
+- `hentaimama.io`, `xanimeporn.com`, `hentaisea.com`, `okioto.net`, `hentaismile.com`
+- `underhentai.net`, `animesex.club`, `3dhentai.it.com`, `hentaiastra.com`, `hdhentai.tv`
+- `hentai.yoga`, `r34tube.com`, `rule34s.com`, `watchanimehentai.com`
+- `hentaiocean.com` — direct MP4 works, but the site exposes only 20 recent items and has no search endpoint.
 
 ---
 
