@@ -37,6 +37,15 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - HentaiHD` | `extension-hentaihd/` | `...en.hentaihd` | `https://hentaihd.net` | 14.1 |
 | `@JalebiBae - Hentais.Tube` | `extension-hentaistube/` | `...en.hentaistube` | `https://www.hentais.tube` | 14.1 |
 | `@JalebiBae - HentaiTube.online` | `extension-hentaitubeonline/` | `...en.hentaitubeonline` | `https://www.hentaitube.online` | 14.1 |
+| `@JalebiBae - Hentai2W` | `extension-hentai2w/` | `...en.hentai2w` | `https://hentai2w.com` | 14.1 |
+| `@JalebiBae - Hentai0` | `extension-hentai0/` | `...en.hentai0` | `https://hentai0.com` | 14.1 |
+| `@JalebiBae - ZhenTube` | `extension-zhentube/` | `...en.zhentube` | `https://zhentube.com` | 14.1 |
+| `@JalebiBae - HentaiFreak` | `extension-hentaifreak/` | `...en.hentaifreak` | `https://hentaifreak.org` | 14.1 |
+| `@JalebiBae - HentaiHorizon` | `extension-hentaihorizon/` | `...en.hentaihorizon` | `https://hentaihorizon.com` | 14.1 |
+| `@JalebiBae - HentaiHaven.red` | `extension-hentaihavenred/` | `...en.hentaihavenred` | `https://hentaihaven.red` | 14.1 |
+| `@JalebiBae - HentaiVideos` | `extension-hentaivideos/` | `...en.hentaivideos` | `https://hentaivideos.net` | 14.1 |
+| `@JalebiBae - Hentai-For` | `extension-hentaifor/` | `...en.hentaifor` | `https://hentai-for.net` | 14.1 |
+| `@JalebiBae - Hentai-JP` | `extension-hentaijp/` | `...en.hentaijp` | `https://hentai-jp.com` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -66,6 +75,15 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | HentaiHD | `6913463672953127187` |
 | Hentais.Tube | `1208998978531376256` |
 | HentaiTube.online | `8165307191022465040` |
+| Hentai2W | `1088020651482575489` |
+| Hentai0 | `9068977780688523816` |
+| ZhenTube | `7201517584102320390` |
+| HentaiFreak | `4113319840366758407` |
+| HentaiHorizon | `3984430965603324359` |
+| HentaiHaven.red | `1592882579783928459` |
+| HentaiVideos | `3510030743580306429` |
+| Hentai-For | `5928761132455073243` |
+| Hentai-JP | `2221151590253777463` |
 ---
 
 ## Scraping notes per site
@@ -214,12 +232,77 @@ Both use the same Next.js frontend and `nhplayer.com` player.
   Both 302 to `server4.baixarhentais.com/...mp4` (no signing; spaces in `Location` must be
   percent-encoded; CDN requires the site Referer).
 
+### Hentai2W (Inertia/Laravel SPA)
+- No server-rendered cards: parse `<script data-page="app" type="application/json">` → `props.series.data[]`
+- Latest `/browse?sort=new&page=N`, popular `/browse?sort=popular&page=N`; search `/browse?q=<q>&page=N`
+- Detail `/series/<slug>` → `props.episodes[]`, episode `/watch/<id>`
+- Video `props.playlist` = `/stream/<id>/master.m3u8`. Needs `age_confirmed` cookie from
+  `POST /age-gate` with the decoded `XSRF-TOKEN` (plus session cookie); attach
+  `Cookie` + `Referer` to the HLS `Video`.
+- Anonymous quota: **5 new episodes/IP/day**; `playlist` becomes null after that (extension returns empty).
+
+### Hentai0 (Laravel + Vue, JSON APIs)
+- Listings are POST JSON: `/fetchvideos?page=N` with source `dedicated-new` / `dedicated-popular`
+- Search POST `/search/vue?page=N` `{keyword,sortBy}`; both need `XSRF-TOKEN` cookie + `X-XSRF-TOKEN` header
+- Items `data.data[]` + top-level `slugs[]` (full `/movie/<slug>-<id>` path); poster index path is `poster/{id}/{ceil(poster/5)}.jpg`
+- Detail `/movie/<slug>-<id>`: Vue `:video` / `:video_source` attributes (HTML-unescape → JSON)
+- Video: signed MP4 list 240p–1080p (`?st=…&e=…`, 24 h TTL; no headers).
+
+### ZhenTube (WordPress + javbest.cc)
+- `/?filter=latest` / `/?filter=most-viewed`, paged `/page/N/?filter=…`; search `/?s=<q>` + `/page/N/?s=<q>`
+- Items `main#main article.thumb-block`; title `a[title]`, thumb `article[data-main-thumb]`
+- Detail `/<slug>/`: `meta[itemprop=embedUrl]` → `javbest.cc/video/<32hex>`
+- Playback: POST `javbest.cc/player/index.php?data=<hash>&do=getVideo` with `X-Requested-With`
+  → `securedLink` signed `.m3u8` (2 h) or `videoSource` unsigned `master.txt`.
+
+### HentaiFreak (WordPress)
+- Latest `/?orderby=date`, popular `/?orderby=post_views`, paged `/page/N/?orderby=…`
+- Search `/?s=<q>`, paged `/page/N/?s=<q>`; cards `#content-masonry article.hentry`
+- Detail: `og:title` (strip ` - Hentai Stream and Download`), `og:image`, synopsis regex, tags `div.hentaitags a[rel=tag]`
+- Video: `div.tab-content video source[src]` direct MP4; encode spaces/`[`/`]`; no headers.
+
+### HentaiHorizon (Laravel)
+- Latest `/category/videos?page=N`, popular `/?trending=15days` (10 items, no paging)
+- Search `/search?q=<q>&page=N`; cards `div.text-white.p-2.group`
+- Detail flat `/<slug>`; iframe `iframe.mediadelivery.net/embed/246448/<uuid>`
+- Video: fetch embed (no foreign Referer) → `<source ... playlist.m3u8>` (Bunny CDN, unsigned, no headers).
+
+### HentaiHaven.red (HentaiHaven clone)
+- Latest `/watch/` + `/watch/page/N/`; search `/?s=<q>` + `/page/N/?s=<q>`; no popular route
+- Cards `#posts-home > a` (search: grid anchors with `figure.main-figure`)
+- Series `/watch/<slug>/`, episodes `/watch/<slug>/episode-N`
+- Player-logic resolver identical to `hentaihaven.com`; read `uri` from config for `api.php`.
+  Skip episodes where `isOctopus=false` (their `eng-*.top` segment host is NXDOMAIN/dead).
+
+### HentaiVideos
+- Latest `/page/N`; popular = second `ul.video-block` (non-active) on the same page
+- Search `/?s=<q>` + `/page/N/?s=<q>`; filter results to `/<slug>-episode-N`
+- Episode detail `/<slug>-episode-N`: `#downLink a` direct MP4 (multi-part → multiple videos),
+  fallback `/frames/*.html` JW `"file":` MP4.
+
+### Hentai-For (DLE)
+- Latest `/page/N/`; search `/index.php?do=search&subaction=search&story=<q>&search_start=N&result_from=…`
+- Cards `#dle-content div.kino-item`; detail `/<id>-<slug>.html`
+- Episodes: `RalodePlayer.init({...})` mirrors object; first GDP3 `items` entries, store `page#ep=<index>`
+- Video: GDP3 iframe `s2.hentaimo.com/embed.php?id=…` with `Referer: https://hentai-for.net/`
+  → `var config.sources[0].src` HLS (4 h token, no headers after resolution).
+
+### Hentai-JP
+- Latest `/latest?page=N`, popular `/popular?page=N`; search `/search?q=<q>&page=N`
+- Cards `div.grid > a.card`; detail `/video/<slug>`; category/tags `.vi-cat` / `.tags`
+- Video: `script#serverData` JSON → iframe servers:
+  * DoodStream/Doodst: parse JW `sources[]` MP4 (protocol-relative URLs, spaces encoded)
+  * playmogo: `pass_md5/<path>` → base + random 10 chars + `?token=&expiry=`, Referer `playmogo.com`
+
 ---
 
 ## Not included (deliberately)
 
 - **HentaiPulse** — version mixes PornHub/RedTube embeds with a KVS Flash-only player on
   `onlyhentaistuff.com`; `function/0/` media URLs return 404. Dropped.
+- **OnlyHentaiStuff.com** — re-checked 2026-11-09: KVS DB/front end alive but `/get_file/`
+  storage returns 404 for **all 39 sampled videos** (valid and bogus hashes alike); alternate
+  qualities, `.m3u8`, downloads and iframes are absent. No playable media exists, so no module.
 - **Hentai Cosplay** — mostly image galleries; `/search-video/` has 32 items and no working
   video pagination (`?page=N` returns images only). Deferred until the site exposes a video index.
 - **aniporn.com** — direct media extraction unresolved. Deferred.
