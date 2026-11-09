@@ -57,6 +57,8 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - Hentaverse` | `extension-hentaverse/` | `...en.hentaverse` | `https://hentaverse.com` | 14.1 |
 | `@JalebiBae - Oppai.Stream` | `extension-oppai/` | `...en.oppai` | `https://oppai.stream` | 14.1 |
 | `@JalebiBae - NekoPoi` | `extension-nekopoi/` | `...en.nekopoi` | `https://nekopoi.care` | 14.1 |
+| `@JalebiBae - MundoHentai` | `extension-mundohentai/` | `...en.mundohentai` | `https://mundohentai.net` | 14.1 |
+| `@JalebiBae - Hanime.red` | `extension-hanimered/` | `...en.hanimered` | `https://hanime.red` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -106,6 +108,8 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | Hentaverse | `269604309978318660` |
 | Oppai.Stream | `6464131142362638028` |
 | NekoPoi | `446061740949428455` |
+| MundoHentai | `805069891989744991` |
+| Hanime.red | `5375457633777705498` |
 ---
 
 ## Scraping notes per site
@@ -380,10 +384,25 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Series detail `/hentai/<slug>`; episodes `.nk-episode-grid a.nk-episode-card`
 - Video: `playmogo.com/e/<id>` iframes → `pass_md5` + token → signed MP4 (same resolver as Hentai-JP).
 
+### MundoHentai (Portuguese)
+- Browse `/hentai/` (24 series); search `/buscar/?q=<q>` (up to 80 results)
+- Cards `a[href^=/info/]`; series detail `/info/<slug>/`
+- Episodes `/episodios/<slug>-episodio-N/` (`article.item.se.episodes`)
+- Video: iframe `www.muitohentai.com/players/p2/?padrao=…` → `<source … p2.php?id=…>`
+  → 302 to `server4.baixarhentais.com/...mp4` (Referer `https://www.muitohentai.com/`).
+
+### Hanime.red
+- Latest/browse `/browse?page=N` (36/page); search `/search?q=<q>&page=N`
+- Cards `img.frame-img` → parent `a` with root episode slug
+- Detail `/<slug>-episode-N`; tags `/tag/`
+- Video: `nhplayer.com/v/<token>` iframe (same nhplayer resolver as HentaiKing).
+
 ---
 
 ## Not included (deliberately)
 
+- **Hentaimania.org** — the domain serves a ~5.5 KB `Redirecting...` parking page; TLS
+  certificate verification also fails. No live listings or media.
 - **Hentaidna.tv** — the domain redirects to `ww38.hentaidna.tv`, which no longer resolves
   (TLS/DNS connection failure on HTTPS and HTTP). No live site to scrape.
 - **KissHentai.net** — domain is now a ParkLogic parking interstitial (soft-200 on every
