@@ -19,6 +19,9 @@ class UnderHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - UnderHentai"
     override val id: Long = 8720741465438590649L
     override val baseUrl = "https://www.underhentai.net"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

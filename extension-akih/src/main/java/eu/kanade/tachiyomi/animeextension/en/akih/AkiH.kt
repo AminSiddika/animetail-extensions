@@ -20,6 +20,9 @@ class AkiH : AnimeHttpSource() {
     override val name = "@JalebiBae - Aki-H"
     override val id: Long = 3876317610373167042L
     override val baseUrl = "https://aki-h.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

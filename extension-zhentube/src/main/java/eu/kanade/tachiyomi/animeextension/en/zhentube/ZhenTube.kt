@@ -21,6 +21,9 @@ class ZhenTube : AnimeHttpSource() {
     override val name = "@JalebiBae - ZhenTube"
     override val id: Long = 7201517584102320390L
     override val baseUrl = "https://zhentube.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

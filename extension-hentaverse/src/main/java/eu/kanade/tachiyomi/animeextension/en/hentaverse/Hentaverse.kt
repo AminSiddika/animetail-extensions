@@ -19,6 +19,9 @@ class Hentaverse : AnimeHttpSource() {
     override val name = "@JalebiBae - Hentaverse"
     override val id: Long = 269604309978318660L
     override val baseUrl = "https://hentaverse.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

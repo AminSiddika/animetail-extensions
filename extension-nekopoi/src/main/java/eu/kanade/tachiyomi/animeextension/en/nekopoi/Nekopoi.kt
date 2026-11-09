@@ -21,6 +21,9 @@ class Nekopoi : AnimeHttpSource() {
     override val name = "@JalebiBae - NekoPoi"
     override val id: Long = 446061740949428455L
     override val baseUrl = "https://nekopoi.care"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

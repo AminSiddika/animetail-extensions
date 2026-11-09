@@ -19,6 +19,9 @@ class MuchoHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - MuchoHentai"
     override val id: Long = 564716588487801074L
     override val baseUrl = "https://muchohentai.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

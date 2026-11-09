@@ -25,6 +25,9 @@ class HanimeRed : AnimeHttpSource() {
     override val name = "@JalebiBae - Hanime.red"
     override val id: Long = 5375457633777705498L
     override val baseUrl = "https://hanime.red"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

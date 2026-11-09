@@ -20,6 +20,9 @@ class EroticHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - EroticHentai"
     override val id: Long = 2582277769739202595L
     override val baseUrl = "https://erotic-hentai.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

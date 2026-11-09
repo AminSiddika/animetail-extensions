@@ -19,6 +19,9 @@ class XAnimePorn : AnimeHttpSource() {
     override val name = "@JalebiBae - XAnimePorn"
     override val id: Long = 4408282602072346120L
     override val baseUrl = "https://xanimeporn.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

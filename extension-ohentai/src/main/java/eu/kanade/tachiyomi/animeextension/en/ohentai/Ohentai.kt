@@ -19,6 +19,9 @@ class Ohentai : AnimeHttpSource() {
     override val name = "@JalebiBae - Ohentai"
     override val id: Long = 7247837649602913976L
     override val baseUrl = "https://ohentai.org"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

@@ -20,6 +20,9 @@ class NsfwR34 : AnimeHttpSource() {
     override val name = "@JalebiBae - NSFWR34"
     override val id: Long = 2124152996770265631L
     override val baseUrl = "https://nsfwr34.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

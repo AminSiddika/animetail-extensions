@@ -20,6 +20,9 @@ class Oppai : AnimeHttpSource() {
     override val name = "@JalebiBae - Oppai.Stream"
     override val id: Long = 6464131142362638028L
     override val baseUrl = "https://oppai.stream"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

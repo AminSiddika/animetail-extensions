@@ -21,6 +21,9 @@ class MundoHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - MundoHentai"
     override val id: Long = 805069891989744991L
     override val baseUrl = "https://mundohentai.net"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

@@ -19,6 +19,9 @@ class CartoonPorn : AnimeHttpSource() {
     override val name = "@JalebiBae - CartoonPorn"
     override val id: Long = 5865626856198430666L
     override val baseUrl = "https://cartoonporn.pro"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

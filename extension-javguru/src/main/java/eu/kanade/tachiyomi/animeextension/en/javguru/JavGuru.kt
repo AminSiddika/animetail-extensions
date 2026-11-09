@@ -21,6 +21,9 @@ class JavGuru : AnimeHttpSource() {
     override val name = "@JalebiBae - Jav.Guru"
     override val id: Long = 1707968472392837187L
     override val baseUrl = "https://jav.guru"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

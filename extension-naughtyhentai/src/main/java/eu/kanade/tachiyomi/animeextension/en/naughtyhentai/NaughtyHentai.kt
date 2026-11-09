@@ -19,6 +19,9 @@ class NaughtyHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - NaughtyHentai"
     override val id: Long = 4310227187973947283L
     override val baseUrl = "https://www.naughtyhentai.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

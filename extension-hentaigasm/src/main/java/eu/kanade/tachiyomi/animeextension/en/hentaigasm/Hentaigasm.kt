@@ -19,6 +19,9 @@ class Hentaigasm : AnimeHttpSource() {
     override val name = "@JalebiBae - Hentaigasm"
     override val id: Long = 4755056524044778684L
     override val baseUrl = "https://hentaigasm.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

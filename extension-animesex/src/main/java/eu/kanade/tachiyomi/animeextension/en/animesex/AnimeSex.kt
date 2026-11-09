@@ -19,6 +19,9 @@ class AnimeSex : AnimeHttpSource() {
     override val name = "@JalebiBae - AnimeSex"
     override val id: Long = 152010478345835201L
     override val baseUrl = "https://animesex.club"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

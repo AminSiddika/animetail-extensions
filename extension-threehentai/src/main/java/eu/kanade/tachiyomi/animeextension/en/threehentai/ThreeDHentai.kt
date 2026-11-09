@@ -20,6 +20,9 @@ class ThreeDHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - 3DHentai"
     override val id: Long = 8355957899450964082L
     override val baseUrl = "https://3dhentai.it.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

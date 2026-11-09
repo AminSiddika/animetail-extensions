@@ -21,6 +21,9 @@ class HentaiFor : AnimeHttpSource() {
     override val name = "@JalebiBae - Hentai-For"
     override val id: Long = 5928761132455073243L
     override val baseUrl = "https://hentai-for.net"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

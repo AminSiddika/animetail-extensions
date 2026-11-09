@@ -19,6 +19,9 @@ class TheJoiDatabase : AnimeHttpSource() {
     override val name = "@JalebiBae - The JOI Database"
     override val id: Long = 3496703588188214876L
     override val baseUrl = "https://www.the-joi-database.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

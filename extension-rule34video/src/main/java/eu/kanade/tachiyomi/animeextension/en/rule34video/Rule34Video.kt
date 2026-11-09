@@ -19,6 +19,9 @@ class Rule34Video : AnimeHttpSource() {
     override val name = "@JalebiBae - Rule34Video"
     override val id: Long = 1031421854898827454L
     override val baseUrl = "https://rule34video.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

@@ -18,6 +18,9 @@ class HentaiYoga : AnimeHttpSource() {
     override val name = "@JalebiBae - Hentai.yoga"
     override val id: Long = 4400951629817373367L
     override val baseUrl = "https://hentai.yoga"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

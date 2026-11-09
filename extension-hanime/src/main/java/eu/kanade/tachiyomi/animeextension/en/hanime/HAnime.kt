@@ -20,6 +20,9 @@ class HAnime : AnimeHttpSource() {
     override val name = "@JalebiBae - H-Anime"
     override val id: Long = 3992978880970788141L
     override val baseUrl = "https://h-anime.net"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

@@ -25,6 +25,9 @@ class UncensoredHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - UncensoredHentai"
     override val id: Long = 4262860293476903340L
     override val baseUrl = "https://uncensoredhentai.xxx"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

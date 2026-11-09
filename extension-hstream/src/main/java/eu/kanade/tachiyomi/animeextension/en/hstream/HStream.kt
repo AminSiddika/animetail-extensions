@@ -22,6 +22,9 @@ class HStream : AnimeHttpSource() {
     override val name = "@JalebiBae - HStream"
     override val id: Long = 246851957385861584L
     override val baseUrl = "https://hstream.moe"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

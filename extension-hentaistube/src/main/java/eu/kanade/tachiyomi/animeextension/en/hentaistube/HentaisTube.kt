@@ -21,6 +21,9 @@ class HentaisTube : AnimeHttpSource() {
     override val name = "@JalebiBae - Hentais.Tube"
     override val id: Long = 1208998978531376256L
     override val baseUrl = "https://www.hentais.tube"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

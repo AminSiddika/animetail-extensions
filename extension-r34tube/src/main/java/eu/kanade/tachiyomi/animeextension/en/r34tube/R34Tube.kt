@@ -20,6 +20,9 @@ class R34Tube : AnimeHttpSource() {
     override val name = "@JalebiBae - R34Tube"
     override val id: Long = 5710395400702408638L
     override val baseUrl = "https://r34tube.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

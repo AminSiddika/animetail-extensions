@@ -32,6 +32,9 @@ class WatchHentai : AnimeHttpSource() {
     override val name = "@JalebiBae - Watch Hentai"
     override val id: Long = 135440030259600165L
     override val baseUrl = "https://watchhentai.net"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

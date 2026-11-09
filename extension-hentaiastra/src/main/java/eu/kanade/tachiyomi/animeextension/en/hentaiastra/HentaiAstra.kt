@@ -20,6 +20,9 @@ class HentaiAstra : AnimeHttpSource() {
     override val name = "@JalebiBae - HentaiAstra"
     override val id: Long = 4569267103063950831L
     override val baseUrl = "https://hentaiastra.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

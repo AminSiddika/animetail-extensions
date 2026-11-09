@@ -19,6 +19,9 @@ class HentaiGem : AnimeHttpSource() {
     override val name = "@JalebiBae - HentaiGem"
     override val id: Long = 843337943156741000L
     override val baseUrl = "https://www.hentaigem.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

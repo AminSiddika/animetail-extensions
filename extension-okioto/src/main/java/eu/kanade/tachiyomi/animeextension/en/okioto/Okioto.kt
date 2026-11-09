@@ -19,6 +19,9 @@ class Okioto : AnimeHttpSource() {
     override val name = "@JalebiBae - Okioto"
     override val id: Long = 5182361200418176396L
     override val baseUrl = "https://okioto.net"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

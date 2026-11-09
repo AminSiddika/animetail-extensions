@@ -19,6 +19,9 @@ class HentaiCloud : AnimeHttpSource() {
     override val name = "@JalebiBae - HentaiCloud"
     override val id: Long = 2020258780867681619L
     override val baseUrl = "https://www.hentaicloud.com"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 

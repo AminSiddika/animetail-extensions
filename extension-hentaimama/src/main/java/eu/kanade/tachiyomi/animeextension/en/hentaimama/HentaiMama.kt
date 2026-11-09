@@ -22,6 +22,9 @@ class HentaiMama : AnimeHttpSource() {
     override val name = "@JalebiBae - HentaiMama"
     override val id: Long = 2332318789350898624L
     override val baseUrl = "https://hentaimama.io"
+    init {
+        MediaVideo.referer = "$baseUrl/"
+    }
     override val lang = "en"
     override val supportsLatest = true
 
