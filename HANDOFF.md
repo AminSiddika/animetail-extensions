@@ -67,6 +67,11 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - HentaiSmile` | `extension-hentaismile/` | `...en.hentaismile` | `https://www.hentaismile.com` | 14.1 |
 | `@JalebiBae - HentaiOcean` | `extension-hentaiocean/` | `...en.hentaiocean` | `https://hentaiocean.com` | 14.1 |
 | `@JalebiBae - Hentai.yoga` | `extension-hentaiyoga/` | `...en.hentaiyoga` | `https://hentai.yoga` | 14.1 |
+| `@JalebiBae - HentaiSea` | `extension-hentaisea/` | `...en.hentaisea` | `https://hentaisea.com` | 14.1 |
+| `@JalebiBae - HdHentai` | `extension-hdhentai/` | `...en.hdhentai` | `https://hdhentai.tv` | 14.1 |
+| `@JalebiBae - HentaiMama` | `extension-hentaimama/` | `...en.hentaimama` | `https://hentaimama.io` | 14.1 |
+| `@JalebiBae - R34Tube` | `extension-r34tube/` | `...en.r34tube` | `https://r34tube.com` | 14.1 |
+| `@JalebiBae - WatchAnimeHentai` | `extension-watchanimehentai/` | `...en.watchanimehentai` | `https://www.watchanimehentai.com` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -126,6 +131,11 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | HentaiSmile | `5599185677673317176` |
 | HentaiOcean | `8488013344619572852` |
 | Hentai.yoga | `4400951629817373367` |
+| HentaiSea | `6673811530837040275` |
+| HdHentai | `8448974416621064458` |
+| HentaiMama | `2332318789350898624` |
+| R34Tube | `5710395400702408638` |
+| WatchAnimeHentai | `1476099918794882295` |
 ---
 
 ## Scraping notes per site
@@ -426,10 +436,10 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 ### More verified-active candidates (not added yet)
 Homepages returned 200 with real content on 2026-11-09:
 - `hanime.tv` — new guest API (`guest.freeanimehentai.net`) is Cloudflare-gated for browse/video.
-- `hentaimama.io`, `xanimeporn.com`, `hentaisea.com`, `okioto.net`, `hentaismile.com`
-- `underhentai.net`, `animesex.club`, `3dhentai.it.com`, `hentaiastra.com`, `hdhentai.tv`
-- `hentai.yoga`, `r34tube.com`, `rule34s.com`, `watchanimehentai.com`
-- `hentaiocean.com` — direct MP4 works, but the site exposes only 20 recent items and has no search endpoint.
+- `xanimeporn.com` — listing/detail OK, but the player `<source src>` is empty and filled by JS.
+- `okioto.net` — listing/detail OK, but playback sits behind a third-party iframe not yet resolved.
+- `underhentai.net` — series pages expose `/watch/?id=<id>&ep=<n>`; player is `luluvdo.com` (needs resolver).
+- `hentaiastra.com` — `/watch` pages expose several third-party embeds (`hentaized`, `streamtape`, `voe`, `mega`).
 
 ### AnimeSex (WordPress)
 - Home listing (60 items; `/page/N/` ignored); search `/?s=<q>`, page 2 `/page/2/?s=<q>`
@@ -460,6 +470,35 @@ Homepages returned 200 with real content on 2026-11-09:
 - Home exposes 15 recent episode links (`/series/<slug>/episode/<id>`); search/pagination absent
 - Episode page embeds `iframe.mediadelivery.net/embed/<library>/<uuid>`
 - Video: fetch the embed → `<source … playlist.m3u8>` on `hentai-series.hentai.yoga` (Bunny CDN).
+
+### HentaiSea (Dooplay)
+- Listing `/videos/`, paged `/videos/page/N/`; search `/?s=<q>` (single page)
+- Cards `article.item` → `a[href^=https://hentaisea.com/videos/]`
+- Video: read `li.dooplay_player_option` (`data-post`, `data-nume`, `data-type`), POST `wp-admin/admin-ajax.php`
+  with `action=doo_player_ajax`; response iframe wraps `jwplayer/?source=<encoded mp4>` → decode `source`.
+
+### HdHentai (kolortube)
+- Listing `/?filter=latest`, paged `/page/N/`; search `/?s=<q>`
+- Cards `div.video-block` → `a.thumb[href]` (detail `/fluffy/<slug>/`); thumbnails use `img[data-src]`
+- Video: player iframe is a direct `hentaicity.com/flv/.../mobile.mp4`.
+
+### HentaiMama (Dooplay)
+- Listing `/hentai-series/`, paged `/hentai-series/page/N/`; search `/search/<q>/`
+- Series `/tvshows/<slug>/`; episodes `/episodes/<slug>-episode-N/`
+- Video: episode has `[data-post]` and mirror tabs `#option-N`; POST `admin-ajax.php`
+  `action=get_player_contents&a=<post>&i=<n>` → JSON array of iframe HTML → fetch `?dt_embed=…`
+  → JWPlayer `sources` (`gdvid.info` direct MP4s with quality labels).
+
+### R34Tube (Next.js)
+- Listing `/browse`, paged `/browse?page=N`; search `/?q=<q>` (page 1 only)
+- Cards `a[href^=/v/]` (`/v/<id>/<slug>`)
+- Video: direct MP4 at `https://videos.r34tube.com/crawl/<id>.mp4` (ignore `preview.mp4`).
+
+### WatchAnimeHentai
+- Listing `/hentai/`, paged `/hentai/N/`; search `/?s=<q>`
+- Series `/info/<slug>/`; episodes `/episodes/<slug>-episode-N/`
+- Video: episode iframe `/players/p2/?padrao=<base64>` → player page `<source src="/players/p2/p2.php?id=<base64>">`
+  → GET without redirects → `Location` is the direct MP4 (muitohentai.club).
 
 ---
 
