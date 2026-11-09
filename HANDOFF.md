@@ -76,6 +76,7 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - Okioto` | `extension-okioto/` | `...en.okioto` | `https://okioto.net` | 14.1 |
 | `@JalebiBae - UnderHentai` | `extension-underhentai/` | `...en.underhentai` | `https://www.underhentai.net` | 14.1 |
 | `@JalebiBae - HentaiAstra` | `extension-hentaiastra/` | `...en.hentaiastra` | `https://hentaiastra.com` | 14.1 |
+| `@JalebiBae - hanime.tv` | `extension-hanimetv/` | `...en.hanimetv` | `https://hanime.tv` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -144,6 +145,7 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | Okioto | `5182361200418176396` |
 | UnderHentai | `8720741465438590649` |
 | HentaiAstra | `4569267103063950831` |
+| hanime.tv | `5358250886824217988` |
 ---
 
 ## Scraping notes per site
@@ -442,7 +444,7 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Episode HTML contains a direct HLS `<source … octopusmanifest.org/…/playlist.m3u8>` (also JSON-LD `contentUrl`); no headers.
 
 ### Still unadded
-- `hanime.tv` — new guest API (`guest.freeanimehentai.net`) is Cloudflare-gated for browse/video.
+- None currently verified-active.
 
 ### AnimeSex (WordPress)
 - Home listing (60 items; `/page/N/` ignored); search `/?s=<q>`, page 2 `/page/2/?s=<q>`
@@ -530,6 +532,23 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Video: `li[data-watch]` → `hentaized.com/e/<slug>` → base64 `atob()` blob
   → `"file":"https://cdn.hentaiastra.site/episodes/<slug>/master.m3u8?…&verify=…"` HLS.
   Other servers (`streamtape`, `voe`, `mega`, `abyssplayer`) are not resolved.
+
+### hanime.tv (Astro)
+- Listing `/browse/trending`, paged `?page=N`; detail `/videos/hentai/<slug>`
+- Cards `a[href^='/videos/hentai/']`; cover from `img.src`
+- Search: `guest.freeanimehentai.net/api/v11/search_hvs` returns the whole index (~3.4k entries,
+  ~4.5 MB); the source caches it 30 min and filters `name` / `search_titles` locally.
+- Video: POST `auth.hanime.tv/api/v11/handshake` with
+  `x-time: <unix>`,
+  `x-signature: sha256("<unix>,Xkdi29,https://hanime.tv,mn2,<unix>")`,
+  `x-signature-version: web2`, and body `{"token": <AES-256-GCM blob>}`.
+  Token key = `sha256("htv-insecure-handshake-v1")`, AAD = `htv-insecure-v1`,
+  plaintext = `{"timestamp_unix":<unix>,"directive":"htv_player_handshake","slug":"<slug>"}`.
+- Response header `x-token` decrypts with the same key/AAD to JSON `sources` (`/hls/...`).
+  Playback URL = `https://hanime.tv` + src + `.m3u8` (ExoPlayer HLS inference); add
+  `Referer: https://hanime.tv/` and `Origin: https://hanime.tv`.
+- `guest.freeanimehentai.net/api/v11/handshake` is Cloudflare-blocked for this origin;
+  use the `auth.hanime.tv` handshake route, which accepts the signature without login.
 
 ---
 
