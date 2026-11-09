@@ -62,7 +62,7 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - Rule34Video` | `extension-rule34video/` | `...en.rule34video` | `https://rule34video.com` | 14.1 |
 | `@JalebiBae - HentaiHaven.xxx` | `extension-hentaihavenxxx/` | `...en.hentaihavenxxx` | `https://hentaihaven.xxx` | 14.1 |
 | `@JalebiBae - AnimeSex` | `extension-animesex/` | `...en.animesex` | `https://animesex.club` | 14.1 |
-| `@JalebiBae - 3DHentai` | `extension-3dhentai/` | `...en.3dhentai` | `https://3dhentai.it.com` | 14.1 |
+| `@JalebiBae - 3DHentai` | `extension-threehentai/` | `...en.threehentai` | `https://3dhentai.it.com` | 14.1 |
 | `@JalebiBae - Rule34s` | `extension-rule34s/` | `...en.rule34s` | `https://rule34s.com` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).

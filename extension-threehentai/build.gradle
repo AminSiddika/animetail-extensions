@@ -6,11 +6,11 @@ plugins {
 def keystore = rootProject.file('signingkey.jks')
 
 android {
-    namespace 'eu.kanade.tachiyomi.animeextension.en.3dhentai'
+    namespace 'eu.kanade.tachiyomi.animeextension.en.threehentai'
     compileSdk 34
 
     defaultConfig {
-        applicationId 'eu.kanade.tachiyomi.animeextension.en.3dhentai'
+        applicationId 'eu.kanade.tachiyomi.animeextension.en.threehentai'
         minSdk 23
         targetSdk 34
         versionCode 1
@@ -37,7 +37,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "aniyomi-en.3dhentai-v${variant.versionName}.apk"
+            outputFileName = "aniyomi-en.threehentai-v${variant.versionName}.apk"
         }
     }
 
