@@ -14,7 +14,8 @@ import java.net.URLEncoder
 
 class HentaiCity : AnimeHttpSource() {
 
-    override val name = "HentaiCity"
+    override val name = "@JalebiBae - HentaiCity"
+    override val id: Long = 6807862366543739110L
     override val baseUrl = "https://www.hentaicity.com"
     override val lang = "en"
     override val supportsLatest = true

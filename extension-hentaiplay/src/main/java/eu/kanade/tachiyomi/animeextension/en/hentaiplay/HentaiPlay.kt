@@ -14,7 +14,8 @@ import org.jsoup.nodes.Document
 
 class HentaiPlay : AnimeHttpSource() {
 
-    override val name = "HentaiPlay"
+    override val name = "@JalebiBae - HentaiPlay"
+    override val id: Long = 3436274373013547001L
     override val baseUrl = "https://hentaiplay.net"
     override val lang = "en"
     override val supportsLatest = true

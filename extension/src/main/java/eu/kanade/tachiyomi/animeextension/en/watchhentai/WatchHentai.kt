@@ -27,7 +27,8 @@ import java.util.Locale
 
 class WatchHentai : AnimeHttpSource() {
 
-    override val name = "Watch Hentai"
+    override val name = "@JalebiBae - Watch Hentai"
+    override val id: Long = 135440030259600165L
     override val baseUrl = "https://watchhentai.net"
     override val lang = "en"
     override val supportsLatest = true

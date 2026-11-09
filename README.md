@@ -14,6 +14,8 @@ An Aniyomi/Animetail-compatible extension repository ("library") with a self-hos
 
 Cloudflare-protected sites (`muchohentai.com`, `ohentai.org`) rely on the host app's Cloudflare/WebView interceptor; the first request may show a challenge.
 
+Browse names are prefixed with `@JalebiBae - ...`. Each source pins its old numeric ID, so existing library entries survive the rename.
+
 `animeidhentai.com` is **not** included: its player (`nhplayer.com`) runs a proof-of-work + browser-fingerprint gate whose `get-video-url-v2.php` rejects non-browser clients (`{"error":"Access denied","code":"V5"}`). Details/search could be scraped, but video playback would not work.
 
 ```

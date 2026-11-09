@@ -14,7 +14,8 @@ import org.json.JSONArray
 
 class MuchoHentai : AnimeHttpSource() {
 
-    override val name = "MuchoHentai"
+    override val name = "@JalebiBae - MuchoHentai"
+    override val id: Long = 564716588487801074L
     override val baseUrl = "https://muchohentai.com"
     override val lang = "en"
     override val supportsLatest = true
