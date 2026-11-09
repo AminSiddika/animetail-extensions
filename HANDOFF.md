@@ -83,6 +83,7 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - Rule34 Paheal` | `extension-rule34paheal/` | `...en.rule34paheal` | `https://rule34.paheal.net` | 14.2 |
 | `@JalebiBae - Hentai222` | `extension-hentai222/` | `...en.hentai222` | `https://hentai222.com` | 14.2 |
 | `@JalebiBae - CartoonPorn` | `extension-cartoonporn/` | `...en.cartoonporn` | `https://cartoonporn.pro` | 14.2 |
+| `@JalebiBae - Jav.Guru` | `extension-javguru/` | `...en.javguru` | `https://jav.guru` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 The direct-MP4 sources updated in the media-proxy pass use version **14.2** (12 modules).
@@ -159,6 +160,7 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | Rule34 Paheal | `1691139563712467096` |
 | Hentai222 | `5713325484251259760` |
 | CartoonPorn | `5865626856198430666` |
+| Jav.Guru | `1707968472392837187` |
 ---
 
 ## Scraping notes per site
@@ -600,6 +602,17 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Cards `a[href^='https://cartoonporn.pro/vids/']`; detail `/vids/<id>/<slug>/`
 - Video: flashvars `video_url` = 720p direct MP4 with `v-acctoken`; `event_reporting2`
   is the 480p alternate. Add `Referer: https://cartoonporn.pro/`.
+
+
+### Jav.Guru (toppornsites top JAV pick)
+- Listing `/`, paged `/page/N/`; search `/?s=<q>`; detail `/<id>/<slug>/`
+- Detail buttons carry `data-localize`; the matching JS object has base64 `iframe_url`
+  → `https://jav.guru/searcho/?xd=<token>`
+- Fetch searcho, reverse the `xd` token, then `searcho/?xr=<reversed>` redirects to
+  `javclan.com/e/<code>`
+- javclan embeds a packed JW Player config (`eval(function(p,a,c,k,e,d)`); unpack it and
+  take `links.hls2` (absolute) or resolve `hls4`/`hls3`. HLS needs
+  `Referer: https://javclan.com/`.
 
 ---
 
