@@ -112,11 +112,11 @@ class Hentai222 : AnimeHttpSource() {
             .set("Referer", "$baseUrl/")
             .build()
         return urls.distinct().map { url ->
-            proxyMediaVideo.create(url, "MP4")
+            proxyVideo(url, "MP4")
         }
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

@@ -129,7 +129,7 @@ class WatchAnimeHentai : AnimeHttpSource() {
             val finalUrl = resolveRedirect(absolute, response.request.url.toString())
                 ?.replace(" ", "%20")
                 ?: return@forEach
-            videos.add(proxyMediaVideo.create(finalUrl, "MP4"))
+            videos.add(proxyVideo(finalUrl, "MP4"))
         }
         return videos.distinctBy { it.url }
     }
@@ -164,7 +164,7 @@ class WatchAnimeHentai : AnimeHttpSource() {
             .build()
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

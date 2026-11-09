@@ -97,16 +97,16 @@ class CartoonPorn : AnimeHttpSource() {
         val videos = mutableListOf<Video>()
         val main = VIDEO_URL_FLASH.find(html)?.groupValues?.get(1)?.replace("\\/", "/")
         if (main != null && main.startsWith("http")) {
-            videos.add(proxyMediaVideo.create(main, "720p"))
+            videos.add(proxyVideo(main, "720p"))
         }
         val fallback = EVENT_URL.find(html)?.groupValues?.get(1)?.replace("\\/", "/")
         if (fallback != null && fallback.startsWith("http") && videos.none { it.url == fallback }) {
-            videos.add(proxyMediaVideo.create(fallback, "480p"))
+            videos.add(proxyVideo(fallback, "480p"))
         }
         return videos
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

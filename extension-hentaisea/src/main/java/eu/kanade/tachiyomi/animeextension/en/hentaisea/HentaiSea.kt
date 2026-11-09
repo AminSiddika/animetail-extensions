@@ -129,7 +129,7 @@ class HentaiSea : AnimeHttpSource() {
             ?: source?.let { URLDecoder.decode(it, "UTF-8") }
             ?: return emptyList()
         if (!url.startsWith("http")) return emptyList()
-        return listOf(proxyMediaVideo.create(url, "MP4"))
+        return listOf(proxyVideo(url, "MP4"))
     }
 
     private fun fetchText(url: String, referer: String): String? = runCatching {
@@ -141,7 +141,7 @@ class HentaiSea : AnimeHttpSource() {
         client.newCall(request).execute().use { it.body?.string() }
     }.getOrNull()
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

@@ -112,12 +112,12 @@ class Oppai : AnimeHttpSource() {
         val videoUrl = storage.trimEnd('/') + "/" + folder + "/ep." + ext
         val dashUrl = storage.trimEnd('/') + "/" + folder + "/dash/manifest.mpd"
         return buildList {
-            add(proxyMediaVideo.create(videoUrl, ext.uppercase()))
+            add(proxyVideo(videoUrl, ext.uppercase()))
             add(MediaVideo.create(dashUrl, "4K DASH", dashUrl))
         }.distinctBy { it.url }
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

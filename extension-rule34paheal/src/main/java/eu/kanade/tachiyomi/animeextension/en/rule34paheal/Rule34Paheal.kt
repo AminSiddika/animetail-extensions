@@ -117,11 +117,11 @@ class Rule34Paheal : AnimeHttpSource() {
             .set("Referer", "$baseUrl/")
             .build()
         return urls.distinct().map { url ->
-            proxyMediaVideo.create(url, if (url.contains(".webm")) "WEBM" else "MP4")
+            proxyVideo(url, if (url.contains(".webm")) "WEBM" else "MP4")
         }
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

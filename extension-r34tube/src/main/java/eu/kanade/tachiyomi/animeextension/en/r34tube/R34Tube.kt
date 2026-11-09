@@ -109,7 +109,7 @@ class R34Tube : AnimeHttpSource() {
                     while (keys.hasNext()) {
                         val label = keys.next()
                         val url = sources.optString(label)
-                        if (url.startsWith("http")) videos.add(proxyMediaVideo.create(url, label))
+                        if (url.startsWith("http")) videos.add(proxyVideo(url, label))
                     }
                     if (videos.isNotEmpty()) return videos
                 }
@@ -120,11 +120,11 @@ class R34Tube : AnimeHttpSource() {
         return MEDIA_URL.findAll(html)
             .map { it.value }
             .distinct()
-            .map { proxyMediaVideo.create(it, "MP4") }
+            .map { proxyVideo(it, "MP4") }
             .toList()
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

@@ -100,19 +100,19 @@ class Hentai4k : AnimeHttpSource() {
             val url = urlMatch.groupValues[1].replace("\\/", "/")
             val label = LABEL_FLASH.find(html)?.groupValues?.get(1)
                 ?.takeIf { it.isNotBlank() } ?: "480p"
-            if (url.startsWith("http")) videos.add(proxyMediaVideo.create(url, label))
+            if (url.startsWith("http")) videos.add(proxyVideo(url, label))
         }
         val altMatch = ALT_FLASH.find(html)
         if (altMatch != null) {
             val url = altMatch.groupValues[1].replace("\\/", "/")
             if (url.startsWith("http") && !url.contains("/?login")) {
-                videos.add(proxyMediaVideo.create(url, "720p"))
+                videos.add(proxyVideo(url, "720p"))
             }
         }
         return videos.distinctBy { it.url }
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

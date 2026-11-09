@@ -4,11 +4,7 @@ import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.Video
 import okhttp3.Headers
 
-/**
- * Global media wrapper. Every playback URL is routed through the Cloudflare
- * Worker, which supplies a browser User-Agent/Referer, supports Range and
- * rewrites HLS playlists/segments.
- */
+/** Routes playback through the Cloudflare media Worker. */
 object MediaVideo {
     private const val WORKER = "https://animextension.mobiusdie.workers.dev"
     private const val TOKEN = "animetail-2026"
@@ -27,19 +23,14 @@ object MediaVideo {
         val builder = headers?.newBuilder() ?: Headers.Builder()
         builder.set("User-Agent", UA)
 
-        // DASH manifests are not rewritten by the Worker; leave them direct.
         if (target.contains(".mpd", ignoreCase = true)) {
             return Video(url, quality, videoUrl, builder.build())
         }
 
-        val ext = when {
-            target.contains(".m3u8", ignoreCase = true) -> "m3u8"
-            target.contains("/hls/", ignoreCase = true) -> "m3u8"
-            target.contains(".webm", ignoreCase = true) -> "webm"
-            else -> "mp4"
-        }
-        val proxied =
-            "$WORKER/api/proxy.$ext?token=$TOKEN&u=${b64(target)}&r=${b64(referer)}"
+        val isHls = target.contains(".m3u8", ignoreCase = true) ||
+            target.contains("/hls/", ignoreCase = true)
+        val endpoint = if (isHls) "api/proxy.m3u8" else "api/proxy"
+        val proxied = "$WORKER/$endpoint?token=$TOKEN&u=${b64(target)}&r=${b64(referer)}"
         return Video(proxied, quality, proxied, builder.build())
     }
 

@@ -106,11 +106,11 @@ class Hentaigasm : AnimeHttpSource() {
         return urls.distinct()
             .map { raw ->
                 val url = raw.replace(" ", "%20")
-                proxyMediaVideo.create(url, "MP4")
+                proxyVideo(url, "MP4")
             }
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

@@ -107,7 +107,7 @@ class XAnimePorn : AnimeHttpSource() {
 
         return links.mapNotNull { (label, downloadUrl) ->
             val url = resolveRedirect(downloadUrl) ?: downloadUrl
-            proxyMediaVideo.create(url, label)
+            proxyVideo(url, label)
         }
     }
 
@@ -131,7 +131,7 @@ class XAnimePorn : AnimeHttpSource() {
             .build()
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(

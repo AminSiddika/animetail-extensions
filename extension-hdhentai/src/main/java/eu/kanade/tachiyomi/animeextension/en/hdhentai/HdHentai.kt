@@ -107,10 +107,10 @@ class HdHentai : AnimeHttpSource() {
             val src = source.absUrl("src").ifBlank { source.attr("src") }
             if (src.startsWith("http")) urls.add(src)
         }
-        return urls.map { proxyMediaVideo.create(it, "MP4") }
+        return urls.map { proxyVideo(it, "MP4") }
     }
 
-    private fun proxyMediaVideo.create(url: String, label: String): Video {
+    private fun proxyVideo(url: String, label: String): Video {
         val videoHeaders = headers.newBuilder()
             .set("Referer", "$baseUrl/")
             .set(
