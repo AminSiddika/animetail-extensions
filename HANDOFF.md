@@ -72,6 +72,10 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - HentaiMama` | `extension-hentaimama/` | `...en.hentaimama` | `https://hentaimama.io` | 14.1 |
 | `@JalebiBae - R34Tube` | `extension-r34tube/` | `...en.r34tube` | `https://r34tube.com` | 14.1 |
 | `@JalebiBae - WatchAnimeHentai` | `extension-watchanimehentai/` | `...en.watchanimehentai` | `https://www.watchanimehentai.com` | 14.1 |
+| `@JalebiBae - XAnimePorn` | `extension-xanimeporn/` | `...en.xanimeporn` | `https://xanimeporn.com` | 14.1 |
+| `@JalebiBae - Okioto` | `extension-okioto/` | `...en.okioto` | `https://okioto.net` | 14.1 |
+| `@JalebiBae - UnderHentai` | `extension-underhentai/` | `...en.underhentai` | `https://www.underhentai.net` | 14.1 |
+| `@JalebiBae - HentaiAstra` | `extension-hentaiastra/` | `...en.hentaiastra` | `https://hentaiastra.com` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -136,6 +140,10 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | HentaiMama | `2332318789350898624` |
 | R34Tube | `5710395400702408638` |
 | WatchAnimeHentai | `1476099918794882295` |
+| XAnimePorn | `4408282602072346120` |
+| Okioto | `5182361200418176396` |
+| UnderHentai | `8720741465438590649` |
+| HentaiAstra | `4569267103063950831` |
 ---
 
 ## Scraping notes per site
@@ -433,13 +441,8 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Series `/watch/<slug>/`; episodes `/watch/<slug>/episode-N/`
 - Episode HTML contains a direct HLS `<source … octopusmanifest.org/…/playlist.m3u8>` (also JSON-LD `contentUrl`); no headers.
 
-### More verified-active candidates (not added yet)
-Homepages returned 200 with real content on 2026-11-09:
+### Still unadded
 - `hanime.tv` — new guest API (`guest.freeanimehentai.net`) is Cloudflare-gated for browse/video.
-- `xanimeporn.com` — listing/detail OK, but the player `<source src>` is empty and filled by JS.
-- `okioto.net` — listing/detail OK, but playback sits behind a third-party iframe not yet resolved.
-- `underhentai.net` — series pages expose `/watch/?id=<id>&ep=<n>`; player is `luluvdo.com` (needs resolver).
-- `hentaiastra.com` — `/watch` pages expose several third-party embeds (`hentaized`, `streamtape`, `voe`, `mega`).
 
 ### AnimeSex (WordPress)
 - Home listing (60 items; `/page/N/` ignored); search `/?s=<q>`, page 2 `/page/2/?s=<q>`
@@ -500,6 +503,33 @@ Homepages returned 200 with real content on 2026-11-09:
 - Series `/info/<slug>/`; episodes `/episodes/<slug>-episode-N/`
 - Video: episode iframe `/players/p2/?padrao=<base64>` → player page `<source src="/players/p2/p2.php?id=<base64>">`
   → GET without redirects → `Location` is the direct MP4 (muitohentai.club).
+
+### XAnimePorn (WordPress novavideon)
+- Listing `/`, paged `/page/N/`; search `/?s=<q>`
+- Cards `ul.listing-tube li` → `a[href][title]`; detail slug page
+- Video: `a[href*='download.php']` links (1080p/720p/480p) → 302 to signed
+  `download.xanimeporn.com/.../[quality]<id>.mp4` (brackets need percent-encoding).
+
+### Okioto (WordPress)
+- Listing `/`, paged `/page/N/`; search `/?s=<q>`
+- Cards `article.loop-video` → `a[href][title]`, thumbnail `data-main-thumb`
+- Video: detail iframe `xhamster.com/embed/<id>` → fetch `xhamster.com/videos/<id>` (canonical redirect)
+  → parse the `video*.xhcdn.com/...m3u8` HLS manifest.
+
+### UnderHentai
+- Listing `/releases/` (single page, ~61 series); search `/?s=<q>`
+- Series `/slug/`; episodes `/watch/?id=<id>&ep=<n>`
+- Video: watch page iframe `luluvdo.com/e/<id>` → unpack the `eval(function(p,a,c,k,e,d)` payload
+  → `file:"https://…tnmr.org/hls2/…/master.m3u8?…"` HLS.
+- Origin intermittently returns Cloudflare 525; listing/watch may need a retry.
+
+### HentaiAstra (WordPress)
+- Listing `/`, paged `/page/N/`; search `/?s=<q>`
+- Cards `div.MovieItem` → `a[href]`, title `div.title h4`, poster `div.poster[data-style]`
+- Episode: `/slug/` → `/slug/watch/`
+- Video: `li[data-watch]` → `hentaized.com/e/<slug>` → base64 `atob()` blob
+  → `"file":"https://cdn.hentaiastra.site/episodes/<slug>/master.m3u8?…&verify=…"` HLS.
+  Other servers (`streamtape`, `voe`, `mega`, `abyssplayer`) are not resolved.
 
 ---
 
