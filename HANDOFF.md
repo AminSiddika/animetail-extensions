@@ -24,6 +24,9 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - HentaiStream` | `extension-hentaistream/` | `...en.hentaistream` | `https://tube.hentaistream.com` | 14.3 |
 | `@JalebiBae - Hentai.TV` | `extension-hentaitv/` | `...en.hentaitv` | `https://hentai.tv` | 14.3 |
 | `@JalebiBae - AnimeIDHentai` | `extension-animeidhentai/` | `...en.animeidhentai` | `https://animeidhentai.com` | 14.3 |
+| `@JalebiBae - NSFWR34` | `extension-nsfwr34/` | `...en.nsfwr34` | `https://nsfwr34.com` | 14.1 |
+| `@JalebiBae - Hentai-Moon` | `extension-hentaimoon/` | `...en.hentaimoon` | `https://hentai-moon.com` | 14.1 |
+| `@JalebiBae - HentaiHaven` | `extension-hentaihaven/` | `...en.hentaihaven` | `https://hentaihaven.icu` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -36,6 +39,13 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | MuchoHentai | `564716588487801074` |
 | Ohentai | `7247837649602913976` |
 | HentaiPlay | `3436274373013547001` |
+| NaughtyHentai | `4310227187973947283` |
+| HentaiStream | `439007758964585859` |
+| Hentai.TV | `4440712566196145822` |
+| AnimeIDHentai | `3638446808547185958` |
+| NSFWR34 | `2124152996770265631` |
+| Hentai-Moon | `1752074658394183681` |
+| HentaiHaven | `1700779054663752842` |
 
 ---
 
@@ -85,6 +95,43 @@ Both use the same Next.js frontend and `nhplayer.com` player.
   fingerprint (`fp`, desktop 1920x1080), then calls `get-video-url-v2.php` for a signed MP4.
 - The signed URL expires quickly and must be resolved at playback time.
 - A consistent desktop UA is required; the fingerprint and UA must match.
+
+### NSFWR34 (video per entry, WordPress)
+- Popular/latest `/video/`, `/video/page/N/` (same stream for both)
+- Search `/?s=<q>`, paged `/page/N/?s=<q>`
+- Items `div.post-item article` → `a.post-permalink` (title in `title=`), thumb `img`
+- Details: `h1`, `og:image`, categories `a[href*='/categories/']`, meta description
+- Video: `video-js[data-settings]` → JSON `sources[]` (`application/x-mpegURL` HLS on a Bunny CDN edge)
+
+### Hentai-Moon (video per entry, KVS)
+- Latest `/latest-updates/N/`, popular `/top-rated/N/`; search `/search/<q>/` (single page only)
+- Items `div.item` → `a[href*='/videos/']` (title attr), thumb `img.thumb-main-img` `srcset`
+- Details: `h1`, `og:image`, flashvars `video_tags:` / `video_categories:`, meta description
+- Video: `video_url` (default) + `video_alt_url`/`video_alt_url_text` (720p). Both are
+  `/get_file/.../<id>.mp4/?v-acctoken=...`; token is in the page, no Referer required (206 verified).
+
+### HentaiHaven (series + episodes, Madara manga-style)
+- Latest and popular both use the home stream `/`, `/page/N/`
+- Listing items `div.item-thumb`; episodes also appear in the grid, so only keep series URLs
+  matching `^https://hentaihaven\.icu/watch/[^/?#]+/?$`
+- Search uses WP REST: `/wp-json/wp/v2/search?search=<q>&subtype=wp-manga&per_page=20&page=N`
+  (the HTML `?s=` search renders zero `.item-thumb` cards). Total pages from `X-WP-TotalPages`.
+- Details: `h1`, `og:image`, tags `a[href*='/genre/']`, `og:description`
+- Episodes: `/watch/<slug>/episode-N` links on the series page
+- Playback: iframe `player-logic/player.php` → meta `x-secure-token`. Token is
+  `rot13 → base64` repeated 3× → JSON `{en, iv, uri}`. POST `<uri>/api.php` with
+  `action=zarat_get_data_player_ajax&a=<en>&b=<iv>` → `data.sources[].src` (open HLS on
+  `octopusmanifest.org`, no auth header or Referer needed for the playlist).
+
+---
+
+## Not included (deliberately)
+
+- **HentaiPulse** — version mixes PornHub/RedTube embeds with a KVS Flash-only player on
+  `onlyhentaistuff.com`; `function/0/` media URLs return 404. Dropped.
+- **Hentai Cosplay** — mostly image galleries; `/search-video/` has 32 items and no working
+  video pagination (`?page=N` returns images only). Deferred until the site exposes a video index.
+- **aniporn.com** — direct media extraction unresolved. Deferred.
 
 ---
 
