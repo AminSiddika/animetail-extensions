@@ -8,10 +8,10 @@ export KEY_STORE_PASSWORD="${KEY_STORE_PASSWORD:-changeit}"
 export KEY_PASSWORD="${KEY_PASSWORD:-changeit}"
 export ALIAS="${ALIAS:-watchhentai}"
 
-./gradlew :extension:assembleRelease --no-daemon
+./gradlew assembleRelease --no-daemon
 
 mkdir -p repo/apk
-cp -f extension/build/outputs/apk/release/*.apk repo/apk/
+find . -path "*/build/outputs/apk/release/*.apk" -exec cp -f {} repo/apk/ \;
 
 echo
 echo "Staged APK:"

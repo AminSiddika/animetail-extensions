@@ -29,17 +29,17 @@ jobs:
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
 
-      - name: Build release APK
-        run: ./gradlew :extension:assembleRelease --no-daemon
+      - name: Build release APKs
+        run: ./gradlew assembleRelease --no-daemon
         env:
           ALIAS: ${{ secrets.ALIAS }}
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Stage APK into repo branch
+      - name: Stage APKs into repo
         run: |
           mkdir -p repo/apk
-          cp extension/build/outputs/apk/release/*.apk repo/apk/
+          find . -path "*/build/outputs/apk/release/*.apk" -exec cp -f {} repo/apk/ \;
 
       - name: Commit APK
         run: |

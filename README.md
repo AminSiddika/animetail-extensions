@@ -95,6 +95,19 @@ https://raw.githubusercontent.com/AminSiddika/animetail-extensions/main/repo/ind
 4. Rebuild and copy the APK into `repo/apk/`.
 5. Keep the same package name and signing key.
 
+## Adding another site
+
+1. Duplicate `extension/` to `extension-<site>/` and change in its `build.gradle`:
+   - `namespace` / `applicationId` → `eu.kanade.tachiyomi.animeextension.<lang>.<site>`
+   - `versionCode` = 1, `versionName` = `14.1`
+   - output filename string
+2. Move the Kotlin class into `.../animeextension/<lang>/<site>/`.
+3. Add `include ':extension-<site>'` to `settings.gradle`.
+4. Add a new object to `repo/index.min.json` with that package, APK name, source name/id/baseUrl.
+5. Push — CI builds every module and copies all APKs into `repo/apk/`.
+
+Each extension must keep a unique `applicationId`; two sources in the same package require an `AnimeSourceFactory` instead.
+
 ## Notes / maintenance
 
 - The site is WordPress + LiteSpeed with lazy-loaded images; the scraper reads `data-src` and falls back to `src`.
