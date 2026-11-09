@@ -103,7 +103,7 @@ class HanimeTv : AnimeHttpSource() {
     )
 
     override fun videoListParse(response: Response): List<Video> {
-        val slug = Regex("/videos/hentai/([a-z0-9-]+)")
+        val slug = Regex("/videos/hentai/([a-z0-9_-]+)")
             .find(response.request.url.toString())
             ?.groupValues?.get(1)
             ?: return emptyList()
@@ -154,7 +154,13 @@ class HanimeTv : AnimeHttpSource() {
             if (url.startsWith("//")) url = "https:$url"
             if (url.startsWith("/")) url = ORIGIN + url
             if (!url.startsWith("http")) continue
-            if (!url.contains(".m3u8")) url += ".m3u8"
+            if (!url.contains(".m3u8")) {
+                url = if (url.contains("?")) {
+                    url.substringBefore("?") + ".m3u8?" + url.substringAfter("?")
+                } else {
+                    "$url.m3u8"
+                }
+            }
             val label = source.optString("label").ifBlank { "HLS" }
             videos.add(Video(url, label, url, videoHeaders))
         }
@@ -185,9 +191,10 @@ class HanimeTv : AnimeHttpSource() {
 
         val current = Regex("[?&]page=(\\d+)").find(response.request.url.toString())
             ?.groupValues?.get(1)?.toIntOrNull() ?: 1
-        val hasNext = doc.select("a[href]").any {
-            it.attr("href").contains("page=${current + 1}")
-        }
+        val hasNext = doc.select("a[rel=next]").isNotEmpty() ||
+            doc.select("a[href]").any {
+                it.attr("href").contains("page=${current + 1}")
+            }
         return AnimesPage(items, hasNext)
     }
 
@@ -301,7 +308,7 @@ class HanimeTv : AnimeHttpSource() {
                 "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
         private val JSON_MEDIA_TYPE = "application/json".toMediaType()
-        private val VIDEO_URL = Regex("""^https://hanime\.tv/videos/hentai/[a-z0-9-]+/?$""")
+        private val VIDEO_URL = Regex("""^https://hanime\.tv/videos/hentai/[a-z0-9_-]+/?$""")
         private val KEY: ByteArray = MessageDigest.getInstance("SHA-256")
             .digest("htv-insecure-handshake-v1".toByteArray(Charsets.UTF_8))
         private val AAD = "htv-insecure-v1".toByteArray(Charsets.UTF_8)
