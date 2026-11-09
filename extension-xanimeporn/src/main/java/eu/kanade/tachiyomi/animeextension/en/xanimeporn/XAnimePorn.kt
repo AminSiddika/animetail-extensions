@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.xanimeporn
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -105,7 +106,7 @@ class XAnimePorn : AnimeHttpSource() {
 
         return links.mapNotNull { (label, downloadUrl) ->
             val url = resolveRedirect(downloadUrl) ?: downloadUrl
-            Video(url, label, url, headers)
+            proxyVideo(url, label)
         }
     }
 
@@ -127,6 +128,11 @@ class XAnimePorn : AnimeHttpSource() {
             .followRedirects(false)
             .followSslRedirects(false)
             .build()
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {

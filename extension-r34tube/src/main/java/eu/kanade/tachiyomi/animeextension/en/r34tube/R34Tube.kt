@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.r34tube
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -107,7 +108,7 @@ class R34Tube : AnimeHttpSource() {
                     while (keys.hasNext()) {
                         val label = keys.next()
                         val url = sources.optString(label)
-                        if (url.startsWith("http")) videos.add(Video(url, label, url, headers))
+                        if (url.startsWith("http")) videos.add(proxyVideo(url, label))
                     }
                     if (videos.isNotEmpty()) return videos
                 }
@@ -118,8 +119,13 @@ class R34Tube : AnimeHttpSource() {
         return MEDIA_URL.findAll(html)
             .map { it.value }
             .distinct()
-            .map { Video(it, "MP4", it, headers) }
+            .map { proxyVideo(it, "MP4") }
             .toList()
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {

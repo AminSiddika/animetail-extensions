@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaimama
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -154,12 +155,12 @@ class HentaiMama : AnimeHttpSource() {
                 SOURCE_OBJECT.findAll(embed).forEach { match ->
                     val url = match.groupValues[1].replace("\\/", "/")
                     val label = match.groupValues[2]
-                    if (url.startsWith("http")) videos.add(Video(url, label, url, headers))
+                    if (url.startsWith("http")) videos.add(proxyVideo(url, label))
                 }
                 if (videos.isEmpty()) {
                     SOURCE_FILE.findAll(embed).forEach { match ->
                         val url = match.groupValues[1].replace("\\/", "/")
-                        if (url.startsWith("http")) videos.add(Video(url, "MP4", url, headers))
+                        if (url.startsWith("http")) videos.add(proxyVideo(url, "MP4"))
                     }
                 }
             }
@@ -175,6 +176,11 @@ class HentaiMama : AnimeHttpSource() {
             .build()
         client.newCall(request).execute().use { it.body?.string() }
     }.getOrNull()
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
+    }
 
     companion object {
         private const val DESKTOP_UA =

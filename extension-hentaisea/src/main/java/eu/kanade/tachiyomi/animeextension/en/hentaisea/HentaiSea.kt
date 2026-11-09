@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaisea
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -127,7 +128,7 @@ class HentaiSea : AnimeHttpSource() {
             ?: source?.let { URLDecoder.decode(it, "UTF-8") }
             ?: return emptyList()
         if (!url.startsWith("http")) return emptyList()
-        return listOf(Video(url, "MP4", url, headers))
+        return listOf(proxyVideo(url, "MP4"))
     }
 
     private fun fetchText(url: String, referer: String): String? = runCatching {
@@ -138,6 +139,11 @@ class HentaiSea : AnimeHttpSource() {
             .build()
         client.newCall(request).execute().use { it.body?.string() }
     }.getOrNull()
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
+    }
 
     companion object {
         private const val DESKTOP_UA =

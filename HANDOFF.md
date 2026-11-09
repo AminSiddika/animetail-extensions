@@ -67,12 +67,12 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - HentaiSmile` | `extension-hentaismile/` | `...en.hentaismile` | `https://www.hentaismile.com` | 14.1 |
 | `@JalebiBae - HentaiOcean` | `extension-hentaiocean/` | `...en.hentaiocean` | `https://hentaiocean.com` | 14.1 |
 | `@JalebiBae - Hentai.yoga` | `extension-hentaiyoga/` | `...en.hentaiyoga` | `https://hentai.yoga` | 14.1 |
-| `@JalebiBae - HentaiSea` | `extension-hentaisea/` | `...en.hentaisea` | `https://hentaisea.com` | 14.1 |
-| `@JalebiBae - HdHentai` | `extension-hdhentai/` | `...en.hdhentai` | `https://hdhentai.tv` | 14.1 |
-| `@JalebiBae - HentaiMama` | `extension-hentaimama/` | `...en.hentaimama` | `https://hentaimama.io` | 14.1 |
-| `@JalebiBae - R34Tube` | `extension-r34tube/` | `...en.r34tube` | `https://r34tube.com` | 14.1 |
-| `@JalebiBae - WatchAnimeHentai` | `extension-watchanimehentai/` | `...en.watchanimehentai` | `https://www.watchanimehentai.com` | 14.1 |
-| `@JalebiBae - XAnimePorn` | `extension-xanimeporn/` | `...en.xanimeporn` | `https://xanimeporn.com` | 14.1 |
+| `@JalebiBae - HentaiSea` | `extension-hentaisea/` | `...en.hentaisea` | `https://hentaisea.com` | 14.2 |
+| `@JalebiBae - HdHentai` | `extension-hdhentai/` | `...en.hdhentai` | `https://hdhentai.tv` | 14.2 |
+| `@JalebiBae - HentaiMama` | `extension-hentaimama/` | `...en.hentaimama` | `https://hentaimama.io` | 14.2 |
+| `@JalebiBae - R34Tube` | `extension-r34tube/` | `...en.r34tube` | `https://r34tube.com` | 14.2 |
+| `@JalebiBae - WatchAnimeHentai` | `extension-watchanimehentai/` | `...en.watchanimehentai` | `https://www.watchanimehentai.com` | 14.2 |
+| `@JalebiBae - XAnimePorn` | `extension-xanimeporn/` | `...en.xanimeporn` | `https://xanimeporn.com` | 14.2 |
 | `@JalebiBae - Okioto` | `extension-okioto/` | `...en.okioto` | `https://okioto.net` | 14.1 |
 | `@JalebiBae - UnderHentai` | `extension-underhentai/` | `...en.underhentai` | `https://www.underhentai.net` | 14.1 |
 | `@JalebiBae - HentaiAstra` | `extension-hentaiastra/` | `...en.hentaiastra` | `https://hentaiastra.com` | 14.1 |
@@ -85,7 +85,7 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - CartoonPorn` | `extension-cartoonporn/` | `...en.cartoonporn` | `https://cartoonporn.pro` | 14.2 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
-The direct-MP4 sources updated in the media-proxy pass use version **14.2**.
+The direct-MP4 sources updated in the media-proxy pass use version **14.2** (12 modules).
 
 Pinned source IDs (do **not** change these, or library entries orphan):
 

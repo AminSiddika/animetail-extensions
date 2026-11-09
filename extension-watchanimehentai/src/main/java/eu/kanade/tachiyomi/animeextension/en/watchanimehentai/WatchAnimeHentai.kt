@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.watchanimehentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -127,7 +128,7 @@ class WatchAnimeHentai : AnimeHttpSource() {
             val finalUrl = resolveRedirect(absolute, response.request.url.toString())
                 ?.replace(" ", "%20")
                 ?: return@forEach
-            videos.add(Video(finalUrl, "MP4", finalUrl, headers))
+            videos.add(proxyVideo(finalUrl, "MP4"))
         }
         return videos.distinctBy { it.url }
     }
@@ -160,6 +161,11 @@ class WatchAnimeHentai : AnimeHttpSource() {
             .followRedirects(false)
             .followSslRedirects(false)
             .build()
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {
