@@ -68,6 +68,7 @@ class HStream : AnimeHttpSource() {
     private fun parseCards(html: String): List<SAnime> {
         val doc = org.jsoup.Jsoup.parse(html)
         return doc.select("a[href^=https://hstream.moe/hentai/]")
+            .toList()
             .filter { it.selectFirst("img") != null }
             .mapNotNull { link ->
                 val href = link.absUrl("href").ifBlank { link.attr("href") }

@@ -47,6 +47,7 @@ class HentaiKing : AnimeHttpSource() {
     private fun parseList(response: Response, paged: Boolean = true): AnimesPage {
         val doc = response.asJsoup()
         val items = doc.select("a[href^=/hentai/]")
+            .toList()
             .filter { it.selectFirst("img") != null }
             .mapNotNull { link ->
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
