@@ -81,6 +81,8 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - Hentai4K` | `extension-hentai4k/` | `...en.hentai4k` | `https://hentai4k.com` | 14.1 |
 | `@JalebiBae - Hentaistream.tv` | `extension-hentaistreamtv/` | `...en.hentaistreamtv` | `https://hentaistream.tv` | 14.1 |
 | `@JalebiBae - Rule34 Paheal` | `extension-rule34paheal/` | `...en.rule34paheal` | `https://rule34.paheal.net` | 14.1 |
+| `@JalebiBae - Hentai222` | `extension-hentai222/` | `...en.hentai222` | `https://hentai222.com` | 14.1 |
+| `@JalebiBae - CartoonPorn` | `extension-cartoonporn/` | `...en.cartoonporn` | `https://cartoonporn.pro` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -154,6 +156,8 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | Hentai4K | `2517983448850670883` |
 | Hentaistream.tv | `4399319176870368526` |
 | Rule34 Paheal | `1691139563712467096` |
+| Hentai222 | `5713325484251259760` |
+| CartoonPorn | `5865626856198430666` |
 ---
 
 ## Scraping notes per site
@@ -583,6 +587,18 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Search `/post/list/<tags>/<page>` (underscores for spaces)
 - Detail `/post/view/<id>`; video `<video><source src='https://r34i.paheal-cdn.net/…'>`
   direct MP4/WebM. `rule34.xxx` itself is not usable without a user API key.
+
+### Hentai222
+- Listing `/videos`, paged `?page=N`; search `/?q=<q>`
+- Cards `a[href^='https://hentai222.com/video/']`; detail `/video/<id>/<slug>`
+- Video: `<video><source src="https://hentai222.com/uploads/videos/…mp4">` direct MP4
+  (JSON-LD `contentUrl` is the fallback). Add `Referer: https://hentai222.com/`.
+
+### CartoonPorn (KVS)
+- Listing `/latest-updates/`, paged `/latest-updates/N/`; search `/?s=<q>`
+- Cards `a[href^='https://cartoonporn.pro/vids/']`; detail `/vids/<id>/<slug>/`
+- Video: flashvars `video_url` = 720p direct MP4 with `v-acctoken`; `event_reporting2`
+  is the 480p alternate. Add `Referer: https://cartoonporn.pro/`.
 
 ---
 
