@@ -1,0 +1,54 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "repo/**"
+      - "**.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Restore signing key
+        run: echo "$KEYSTORE_B64" | base64 -d > signingkey.jks
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+
+      - name: Build release APK
+        run: ./gradlew :extension:assembleRelease --no-daemon
+        env:
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Stage APK into repo branch
+        run: |
+          mkdir -p repo/apk
+          cp extension/build/outputs/apk/release/*.apk repo/apk/
+
+      - name: Commit APK
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add repo/apk
+          if git diff --cached --quiet; then
+            echo "No APK changes"
+          else
+            git commit -m "Update APK [skip ci]"
+            git push
+          fi

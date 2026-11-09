@@ -1,0 +1,103 @@
+# WatchHentai — Aniyomi/Animetail extension
+
+An [Aniyomi](https://aniyomi.org)-compatible extension for `https://watchhentai.net`, plus a self-hosted extension repository ("library") so it can be installed and updated from inside Animetail/Mihon-style apps.
+
+```
+extension/                          Android app module = one extension APK
+  src/main/AndroidManifest.xml      extension metadata (class, NSFW flag)
+  src/main/java/.../WatchHentai.kt  the scraper
+  src/main/res/mipmap-*/            launcher icons
+repo/
+  index.min.json                    extension index the app reads
+  repo.json                         store metadata + signing fingerprint
+  apk/                              built APKs live here
+  icon/                             store icons
+.github/workflows/build.yml         CI build + auto-commit APK
+scripts/build.sh                    local build helper
+signingkey.jks                      signing key (gitignored — back it up!)
+```
+
+## What the scraper maps
+
+| App concept | Site |
+|---|---|
+| Anime (series) | `/series/<slug>/` |
+| Browse "Popular" | `/trending/page/N/` |
+| Browse "Latest" | `/series/page/N/` (recently added) |
+| Search | `/?s=<query>&type=series` |
+| Genre filter | `/genre/<slug>/page/N/` |
+| Episode | `/videos/<slug>/` inside `#episodes a.tv-ep-card-link` |
+| Video | `[data-primary-player-url]` → player page → JSON-LD `contentUrl`, with base64/XOR fallback |
+
+The MP4 files on `hstorage.xyz` are hotlink-protected and return **403** without a `Referer: https://watchhentai.net/` header, so the extension attaches that header to every `Video`.
+
+The player page also obfuscates its JW Player source. The fallback decoder mirrors the site's `whDecodeMediaUrl`: base64url → XOR each byte with `(13 + i % 17) & 0xFF` → reverse → base64 decode.
+
+## Build
+
+Requirements: JDK 17, Android SDK (compileSdk 34), Gradle 8.2+.
+
+Local:
+
+```bash
+./scripts/build.sh
+# or directly
+gradle :extension:assembleRelease
+```
+
+Output: `extension/build/outputs/apk/release/aniyomi-en.watchhentai-v14.1.apk`
+
+GitHub Actions: push to `main`. Add these repository secrets first:
+
+| Secret | Value |
+|---|---|
+| `KEYSTORE_B64` | `base64 -w0 signingkey.jks` |
+| `ALIAS` | `watchhentai` |
+| `KEY_STORE_PASSWORD` | keystore password |
+| `KEY_PASSWORD` | key password |
+
+## Signing
+
+The included `signingkey.jks` is a throwaway key generated for this scaffold:
+
+- alias: `watchhentai`
+- store/key password: `changeit`
+- SHA-256 cert fingerprint: `d2874ca125feb5b59f32cfdb566ce4e901d0545925797fb8ff45ec4ae8e0b450`
+
+It is listed in `.gitignore`. **Back it up.** If you lose it, users must uninstall the extension before they can install a differently-signed update.
+
+If you generate a new key, update `repo.json`:
+
+```bash
+keytool -list -v -keystore signingkey.jks -alias watchhentai | grep SHA256
+# strip colons, lowercase -> "signingKeyFingerprint"
+```
+
+Modern Mihon/Aniyomi builds check the APK signature against this fingerprint. A mismatch makes installs fail with a signature error.
+
+## Publish the repo
+
+1. Repo is at `https://github.com/AminSiddika/animetail-extensions` (`meta.website` already points there).
+2. Build once so `repo/apk/aniyomi-en.watchhentai-v14.1.apk` exists (CI does this automatically).
+3. In Animetail: **Settings → Browse → Extension repos → Add**, and paste:
+
+```
+https://raw.githubusercontent.com/AminSiddika/animetail-extensions/main/repo/index.min.json
+```
+
+(or the GitHub Pages equivalent). The app fetches `repo.json`, `index.min.json`, and APKs from `.../apk/<file>` relative to that URL.
+
+## Releasing an update
+
+1. Edit the source.
+2. Bump `versionCode` / `versionName` in `extension/build.gradle` (e.g. `2` / `14.2`).
+3. Update `repo/index.min.json`: `code`, `version`, and `apk` filename.
+4. Rebuild and copy the APK into `repo/apk/`.
+5. Keep the same package name and signing key.
+
+## Notes / maintenance
+
+- The site is WordPress + LiteSpeed with lazy-loaded images; the scraper reads `data-src` and falls back to `src`.
+- Search returns a single page of series (the site does not paginate `?s=`), so `hasNextPage` is false there.
+- Dubbed episodes are separate pages and appear as separate episodes ("Episode 1 (Dubbed)").
+- If the site changes its theme/player, the selectors at the top of each parse function are the only places to fix.

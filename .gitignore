@@ -1,0 +1,9 @@
+.gradle/
+build/
+extension/build/
+local.properties
+signingkey.jks
+.idea/
+*.iml
+*.hprof
+.DS_Store
