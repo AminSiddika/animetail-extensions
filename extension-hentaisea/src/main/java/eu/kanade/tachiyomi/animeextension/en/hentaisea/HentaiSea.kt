@@ -117,11 +117,27 @@ class HentaiSea : AnimeHttpSource() {
             ?.replace("&amp;", "&")
             ?: return emptyList()
         val source = Regex("[?&]source=([^&]+)").find(iframe)?.groupValues?.get(1)
+
+        val playerHtml = fetchText(iframe, response.request.url.toString())
+        val signed = playerHtml?.let {
+            Regex("\"file\"\\s*:\\s*\"([^\"]+)\"").find(it)
+                ?.groupValues?.get(1)?.replace("\\/", "/")
+        }
+        val url = signed
+            ?: source?.let { URLDecoder.decode(it, "UTF-8") }
             ?: return emptyList()
-        val url = URLDecoder.decode(source, "UTF-8")
         if (!url.startsWith("http")) return emptyList()
         return listOf(Video(url, "MP4", url, headers))
     }
+
+    private fun fetchText(url: String, referer: String): String? = runCatching {
+        val request = Request.Builder()
+            .url(url)
+            .header("User-Agent", DESKTOP_UA)
+            .header("Referer", referer)
+            .build()
+        client.newCall(request).execute().use { it.body?.string() }
+    }.getOrNull()
 
     companion object {
         private const val DESKTOP_UA =

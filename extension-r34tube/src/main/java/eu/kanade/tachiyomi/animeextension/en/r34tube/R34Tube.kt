@@ -10,6 +10,7 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.Request
 import okhttp3.Response
+import org.json.JSONObject
 import java.net.URLEncoder
 
 class R34Tube : AnimeHttpSource() {
@@ -85,6 +86,34 @@ class R34Tube : AnimeHttpSource() {
     )
 
     override fun videoListParse(response: Response): List<Video> {
+        val pageUrl = response.request.url.toString()
+        val id = Regex("/v/([a-z0-9]+)").find(pageUrl)?.groupValues?.get(1)
+        if (id != null) {
+            val json = runCatching {
+                val request = Request.Builder()
+                    .url("$baseUrl/v/$id/stream-urls")
+                    .header("User-Agent", DESKTOP_UA)
+                    .header("Referer", pageUrl)
+                    .build()
+                client.newCall(request).execute().use { it.body?.string().orEmpty() }
+            }.getOrNull()
+            if (!json.isNullOrBlank()) {
+                val sources = runCatching {
+                    JSONObject(json).optJSONObject("sources")
+                }.getOrNull()
+                if (sources != null) {
+                    val videos = mutableListOf<Video>()
+                    val keys = sources.keys()
+                    while (keys.hasNext()) {
+                        val label = keys.next()
+                        val url = sources.optString(label)
+                        if (url.startsWith("http")) videos.add(Video(url, label, url, headers))
+                    }
+                    if (videos.isNotEmpty()) return videos
+                }
+            }
+        }
+
         val html = response.asJsoup().html()
         return MEDIA_URL.findAll(html)
             .map { it.value }
@@ -94,7 +123,10 @@ class R34Tube : AnimeHttpSource() {
     }
 
     companion object {
-        private val VIDEO_URL = Regex("""^https://r34tube\.com/v/[a-z0-9]+/[^/?#]+$""")
+        private const val DESKTOP_UA =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        private val VIDEO_URL = Regex("""^https://r34tube\.com/v/[a-z0-9]+/[^/?#]+/?$""")
         private val MEDIA_URL = Regex("""https?://videos\.r34tube\.com/crawl/[^"'\s<>]+\.mp4""")
     }
 }
