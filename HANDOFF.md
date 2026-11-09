@@ -79,6 +79,8 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - hanime.tv` | `extension-hanimetv/` | `...en.hanimetv` | `https://hanime.tv` | 14.1 |
 | `@JalebiBae - Hentaigasm` | `extension-hentaigasm/` | `...en.hentaigasm` | `https://hentaigasm.com` | 14.1 |
 | `@JalebiBae - Hentai4K` | `extension-hentai4k/` | `...en.hentai4k` | `https://hentai4k.com` | 14.1 |
+| `@JalebiBae - Hentaistream.tv` | `extension-hentaistreamtv/` | `...en.hentaistreamtv` | `https://hentaistream.tv` | 14.1 |
+| `@JalebiBae - Rule34 Paheal` | `extension-rule34paheal/` | `...en.rule34paheal` | `https://rule34.paheal.net` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -150,6 +152,8 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | hanime.tv | `5358250886824217988` |
 | Hentaigasm | `4755056524044778684` |
 | Hentai4K | `2517983448850670883` |
+| Hentaistream.tv | `4399319176870368526` |
+| Rule34 Paheal | `1691139563712467096` |
 ---
 
 ## Scraping notes per site
@@ -566,10 +570,27 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Video: flashvars `video_url` (480p direct MP4 with `v-acctoken`); `video_alt_url` is
   `https://hentai4k.com/?login` for 720p and is skipped. Add `Referer: https://hentai4k.com/`.
 
+### Hentaistream.tv
+- Listing `/`, paged `/page/N/`; search `/?s=<q>`
+- Series `/watch/<slug>/`; episodes `/watch/<slug>/episode-N/`
+- Video: episode iframe `player.php?data=…` → fetch player page → `meta[name=x-secure-token]`
+  → decode ROT13 + base64 three times → JSON with `en`, `iv`, `uri`
+  → POST `uri/api.php` multipart `action=zarat_get_data_player_ajax&a=<en>&b=<iv>`
+  → `data.sources[].src` is an octopusmanifest HLS playlist.
+
+### Rule34 Paheal
+- Listing `/post/list/animated/<page>`; keep only `div.shm-thumb[data-mime^=video/]`
+- Search `/post/list/<tags>/<page>` (underscores for spaces)
+- Detail `/post/view/<id>`; video `<video><source src='https://r34i.paheal-cdn.net/…'>`
+  direct MP4/WebM. `rule34.xxx` itself is not usable without a user API key.
+
 ---
 
 ## Not included (deliberately)
 
+- **Rule34.xxx** — re-checked 2026-11-09: the DAPI endpoint now returns
+  `"Missing authentication"` (requires an account `user_id` + `api_key`), and the HTML site is
+  behind a Cloudflare managed CAPTCHA. Rule34 Paheal is included as the working Rule34 board.
 - **Hentaimania.org** — the domain serves a ~5.5 KB `Redirecting...` parking page; TLS
   certificate verification also fails. No live listings or media.
 - **Hentaidna.tv** — the domain redirects to `ww38.hentaidna.tv`, which no longer resolves
