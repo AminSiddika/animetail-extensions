@@ -473,9 +473,10 @@ Homepages returned 200 with real content on 2026-11-09:
 
 ### HentaiSea (Dooplay)
 - Listing `/videos/`, paged `/videos/page/N/`; search `/?s=<q>` (single page)
-- Cards `article.item` → `a[href^=https://hentaisea.com/videos/]`
+- Cards `article.item` → `a[href^='https://hentaisea.com/videos/']`
 - Video: read `li.dooplay_player_option` (`data-post`, `data-nume`, `data-type`), POST `wp-admin/admin-ajax.php`
-  with `action=doo_player_ajax`; response iframe wraps `jwplayer/?source=<encoded mp4>` → decode `source`.
+  with `action=doo_player_ajax`; the response iframe is a JW Player wrapper — fetch it and read the signed
+  `var jw = {"file":"…freakpornos.com/mp4/tube/…mp4?st=…&e=…&s=…"}` URL.
 
 ### HdHentai (kolortube)
 - Listing `/?filter=latest`, paged `/page/N/`; search `/?s=<q>`
@@ -491,8 +492,8 @@ Homepages returned 200 with real content on 2026-11-09:
 
 ### R34Tube (Next.js)
 - Listing `/browse`, paged `/browse?page=N`; search `/?q=<q>` (page 1 only)
-- Cards `a[href^=/v/]` (`/v/<id>/<slug>`)
-- Video: direct MP4 at `https://videos.r34tube.com/crawl/<id>.mp4` (ignore `preview.mp4`).
+- Cards `a[href^='/v/']` (`/v/<id>/<slug>`)
+- Video: GET `/v/<id>/stream-urls` → JSON `sources` map (`480p`/`720p`/`1080p`) with signed `videos.r34tube.com` URLs.
 
 ### WatchAnimeHentai
 - Listing `/hentai/`, paged `/hentai/N/`; search `/?s=<q>`
