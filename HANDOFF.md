@@ -64,6 +64,9 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - AnimeSex` | `extension-animesex/` | `...en.animesex` | `https://animesex.club` | 14.1 |
 | `@JalebiBae - 3DHentai` | `extension-threehentai/` | `...en.threehentai` | `https://3dhentai.it.com` | 14.1 |
 | `@JalebiBae - Rule34s` | `extension-rule34s/` | `...en.rule34s` | `https://rule34s.com` | 14.1 |
+| `@JalebiBae - HentaiSmile` | `extension-hentaismile/` | `...en.hentaismile` | `https://www.hentaismile.com` | 14.1 |
+| `@JalebiBae - HentaiOcean` | `extension-hentaiocean/` | `...en.hentaiocean` | `https://hentaiocean.com` | 14.1 |
+| `@JalebiBae - Hentai.yoga` | `extension-hentaiyoga/` | `...en.hentaiyoga` | `https://hentai.yoga` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -120,6 +123,9 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | AnimeSex | `152010478345835201` |
 | 3DHentai | `8355957899450964082` |
 | Rule34s | `5328116957017708020` |
+| HentaiSmile | `5599185677673317176` |
+| HentaiOcean | `8488013344619572852` |
+| Hentai.yoga | `4400951629817373367` |
 ---
 
 ## Scraping notes per site
@@ -439,6 +445,21 @@ Homepages returned 200 with real content on 2026-11-09:
 - Home listing (62 items; only one page); search `/search?q=<q>&page=N`
 - Cards `a[href^=/watch/]`; detail `/watch/<slug>`
 - Video: JSON-LD `contentUrl` → direct MP4; no headers.
+
+### HentaiSmile (KVS)
+- Latest `/latest-updates/N/`, popular `/most-popular/N/`; search `?s=` is weak (site ignores it for some queries)
+- Cards `a[href^=https://www.hentaismile.com/videos/]`
+- Video: KVS flashvars `video_url` / `video_alt_url` / `video_alt_url2` → direct MP4.
+
+### HentaiOcean
+- Home exposes 20 recent `/watch/<slug>` entries; no working pagination or search
+- Detail page has `var jsondata = {...}`; `mirrors[].mirrorurl` = `w2.hentaiocean.com/play?vid=<file>`
+- Video: rewrite to `https://w2.hentaiocean.com/video/<encoded file>` → direct MP4.
+
+### Hentai.yoga
+- Home exposes 15 recent episode links (`/series/<slug>/episode/<id>`); search/pagination absent
+- Episode page embeds `iframe.mediadelivery.net/embed/<library>/<uuid>`
+- Video: fetch the embed → `<source … playlist.m3u8>` on `hentai-series.hentai.yoga` (Bunny CDN).
 
 ---
 
