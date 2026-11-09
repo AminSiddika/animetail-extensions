@@ -55,7 +55,7 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - EroticHentai` | `extension-erotichentai/` | `...en.erotichentai` | `https://erotic-hentai.com` | 14.1 |
 | `@JalebiBae - H-Anime` | `extension-hanime/` | `...en.hanime` | `https://h-anime.net` | 14.1 |
 | `@JalebiBae - Hentaverse` | `extension-hentaverse/` | `...en.hentaverse` | `https://hentaverse.com` | 14.1 |
-| `@JalebiBae - Oppai.Stream` | `extension-oppai/` | `...en.oppai` | `https://oppai.stream` | 14.1 |
+| `@JalebiBae - Oppai.Stream` | `extension-oppai/` | `...en.oppai` | `https://oppai.stream` | 14.2 |
 | `@JalebiBae - NekoPoi` | `extension-nekopoi/` | `...en.nekopoi` | `https://nekopoi.care` | 14.1 |
 | `@JalebiBae - MundoHentai` | `extension-mundohentai/` | `...en.mundohentai` | `https://mundohentai.net` | 14.1 |
 | `@JalebiBae - Hanime.red` | `extension-hanimered/` | `...en.hanimered` | `https://hanime.red` | 14.1 |
@@ -77,14 +77,15 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - UnderHentai` | `extension-underhentai/` | `...en.underhentai` | `https://www.underhentai.net` | 14.1 |
 | `@JalebiBae - HentaiAstra` | `extension-hentaiastra/` | `...en.hentaiastra` | `https://hentaiastra.com` | 14.1 |
 | `@JalebiBae - hanime.tv` | `extension-hanimetv/` | `...en.hanimetv` | `https://hanime.tv` | 14.1 |
-| `@JalebiBae - Hentaigasm` | `extension-hentaigasm/` | `...en.hentaigasm` | `https://hentaigasm.com` | 14.1 |
-| `@JalebiBae - Hentai4K` | `extension-hentai4k/` | `...en.hentai4k` | `https://hentai4k.com` | 14.1 |
+| `@JalebiBae - Hentaigasm` | `extension-hentaigasm/` | `...en.hentaigasm` | `https://hentaigasm.com` | 14.2 |
+| `@JalebiBae - Hentai4K` | `extension-hentai4k/` | `...en.hentai4k` | `https://hentai4k.com` | 14.2 |
 | `@JalebiBae - Hentaistream.tv` | `extension-hentaistreamtv/` | `...en.hentaistreamtv` | `https://hentaistream.tv` | 14.1 |
-| `@JalebiBae - Rule34 Paheal` | `extension-rule34paheal/` | `...en.rule34paheal` | `https://rule34.paheal.net` | 14.1 |
-| `@JalebiBae - Hentai222` | `extension-hentai222/` | `...en.hentai222` | `https://hentai222.com` | 14.1 |
-| `@JalebiBae - CartoonPorn` | `extension-cartoonporn/` | `...en.cartoonporn` | `https://cartoonporn.pro` | 14.1 |
+| `@JalebiBae - Rule34 Paheal` | `extension-rule34paheal/` | `...en.rule34paheal` | `https://rule34.paheal.net` | 14.2 |
+| `@JalebiBae - Hentai222` | `extension-hentai222/` | `...en.hentai222` | `https://hentai222.com` | 14.2 |
+| `@JalebiBae - CartoonPorn` | `extension-cartoonporn/` | `...en.cartoonporn` | `https://cartoonporn.pro` | 14.2 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
+The direct-MP4 sources updated in the media-proxy pass use version **14.2**.
 
 Pinned source IDs (do **not** change these, or library entries orphan):
 

@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.hentai222
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -110,8 +111,13 @@ class Hentai222 : AnimeHttpSource() {
             .set("Referer", "$baseUrl/")
             .build()
         return urls.distinct().map { url ->
-            Video(url, "MP4", url, videoHeaders)
+            proxyVideo(url, "MP4")
         }
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.cartoonporn
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -95,13 +96,18 @@ class CartoonPorn : AnimeHttpSource() {
         val videos = mutableListOf<Video>()
         val main = VIDEO_URL_FLASH.find(html)?.groupValues?.get(1)?.replace("\\/", "/")
         if (main != null && main.startsWith("http")) {
-            videos.add(Video(main, "720p", main, headers))
+            videos.add(proxyVideo(main, "720p"))
         }
         val fallback = EVENT_URL.find(html)?.groupValues?.get(1)?.replace("\\/", "/")
         if (fallback != null && fallback.startsWith("http") && videos.none { it.url == fallback }) {
-            videos.add(Video(fallback, "480p", fallback, headers))
+            videos.add(proxyVideo(fallback, "480p"))
         }
         return videos
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {

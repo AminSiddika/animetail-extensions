@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.oppai
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -110,9 +111,14 @@ class Oppai : AnimeHttpSource() {
         val videoUrl = storage.trimEnd('/') + "/" + folder + "/ep." + ext
         val dashUrl = storage.trimEnd('/') + "/" + folder + "/dash/manifest.mpd"
         return buildList {
-            add(Video(videoUrl, ext.uppercase(), videoUrl))
+            add(proxyVideo(videoUrl, ext.uppercase()))
             add(Video(dashUrl, "4K DASH", dashUrl))
         }.distinctBy { it.url }
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {

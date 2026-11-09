@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.rule34paheal
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -115,8 +116,13 @@ class Rule34Paheal : AnimeHttpSource() {
             .set("Referer", "$baseUrl/")
             .build()
         return urls.distinct().map { url ->
-            Video(url, if (url.contains(".webm")) "WEBM" else "MP4", url, videoHeaders)
+            proxyVideo(url, if (url.contains(".webm")) "WEBM" else "MP4")
         }
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {

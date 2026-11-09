@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.en.hentai4k
 
+import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -98,16 +99,21 @@ class Hentai4k : AnimeHttpSource() {
             val url = urlMatch.groupValues[1].replace("\\/", "/")
             val label = LABEL_FLASH.find(html)?.groupValues?.get(1)
                 ?.takeIf { it.isNotBlank() } ?: "480p"
-            if (url.startsWith("http")) videos.add(Video(url, label, url, headers))
+            if (url.startsWith("http")) videos.add(proxyVideo(url, label))
         }
         val altMatch = ALT_FLASH.find(html)
         if (altMatch != null) {
             val url = altMatch.groupValues[1].replace("\\/", "/")
             if (url.startsWith("http") && !url.contains("/?login")) {
-                videos.add(Video(url, "720p", url, headers))
+                videos.add(proxyVideo(url, "720p"))
             }
         }
         return videos.distinctBy { it.url }
+    }
+
+    private fun proxyVideo(url: String, label: String): Video {
+        val proxied = ProxySupport.url(client, url, "$baseUrl/")
+        return Video(proxied, label, proxied, headers)
     }
 
     companion object {
