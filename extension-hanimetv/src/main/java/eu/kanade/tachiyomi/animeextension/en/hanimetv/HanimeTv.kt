@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hanimetv
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -162,7 +164,7 @@ class HanimeTv : AnimeHttpSource() {
                 }
             }
             val label = source.optString("label").ifBlank { "HLS" }
-            videos.add(Video(url, label, url, videoHeaders))
+            videos.add(MediaVideo.create(url, label, url, videoHeaders))
         }
         return videos.distinctBy { it.url }
     }

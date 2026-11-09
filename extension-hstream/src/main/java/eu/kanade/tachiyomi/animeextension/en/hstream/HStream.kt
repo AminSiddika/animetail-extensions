@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hstream
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -150,7 +152,7 @@ class HStream : AnimeHttpSource() {
         val domain = domains.optString(0).trimEnd('/')
         if (!domain.startsWith("http")) return emptyList()
         val url = "$domain/$path/x264.720p.mp4"
-        return listOf(Video(url, "720p", url))
+        return listOf(MediaVideo.create(url, "720p", url))
     }
 
     companion object {

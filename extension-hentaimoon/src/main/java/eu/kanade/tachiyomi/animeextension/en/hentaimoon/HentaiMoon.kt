@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaimoon
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -106,10 +108,10 @@ class HentaiMoon : AnimeHttpSource() {
 
         return buildList {
             if (isPlayable(main)) {
-                add(Video(main!!, mainLabel.ifBlank { "480p" }, main))
+                add(MediaVideo.create(main!!, mainLabel.ifBlank { "480p" }, main))
             }
             if (isPlayable(alt) && alt != main) {
-                add(Video(alt!!, altLabel.ifBlank { "720p" }, alt))
+                add(MediaVideo.create(alt!!, altLabel.ifBlank { "720p" }, alt))
             }
         }
     }

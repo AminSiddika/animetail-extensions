@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.okioto
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -103,14 +105,14 @@ class Okioto : AnimeHttpSource() {
         val hls = Regex("""https?://[^"'\s<>]+\.m3u8[^"'\s<>]*""")
             .find(page)?.value
             ?.replace("&amp;", "&")
-        if (hls != null) return listOf(Video(hls, "HLS", hls, headers))
+        if (hls != null) return listOf(MediaVideo.create(hls, "HLS", hls, headers))
 
         return Regex("""https?://[^"'\s<>]+\.mp4[^"'\s<>]*""")
             .findAll(page)
             .map { it.value.replace("&amp;", "&") }
             .filter { it.contains("xhcdn.com") }
             .distinct()
-            .map { Video(it, "MP4", it, headers) }
+            .map { MediaVideo.create(it, "MP4", it, headers) }
             .toList()
     }
 

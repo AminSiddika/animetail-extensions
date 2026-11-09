@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaihavencom
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -153,7 +155,7 @@ class HentaiHavenCom : AnimeHttpSource() {
                 val url = source.optString("src")
                 if (!url.startsWith("http")) continue
                 val label = source.optString("label").ifBlank { "Auto" }
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

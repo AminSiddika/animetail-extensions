@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaivideos
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -109,7 +111,7 @@ class HentaiVideos : AnimeHttpSource() {
         if (downloads.isNotEmpty()) {
             return downloads.mapIndexed { index, url ->
                 val label = if (downloads.size > 1) "Part ${index + 1}" else "MP4"
-                Video(url, label, url)
+                MediaVideo.create(url, label, url)
             }
         }
 
@@ -121,7 +123,7 @@ class HentaiVideos : AnimeHttpSource() {
             val url = Regex(""""file"\s*:\s*"([^"]+)"""").find(html)?.groupValues?.get(1)
                 ?: return@mapIndexedNotNull null
             val label = if (frames.size > 1) "Part ${index + 1}" else "MP4"
-            Video(url, label, url)
+            MediaVideo.create(url, label, url)
         }
     }
 

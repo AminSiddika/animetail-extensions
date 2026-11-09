@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaistube
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -132,7 +134,7 @@ class HentaisTube : AnimeHttpSource() {
         val encoded = location.replace(" ", "%20")
         if (!encoded.startsWith("http")) return emptyList()
         return listOf(
-            Video(
+            MediaVideo.create(
                 encoded,
                 "MP4",
                 encoded,

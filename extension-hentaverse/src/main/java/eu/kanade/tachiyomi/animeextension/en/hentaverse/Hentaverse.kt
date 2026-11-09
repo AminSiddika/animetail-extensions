@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaverse
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -115,7 +117,7 @@ class Hentaverse : AnimeHttpSource() {
         return urls.map { url ->
             val quality = Regex("""/(\d{3,4})p\.mp4""").find(url)?.groupValues?.get(1)
                 ?.let { "${it}p" } ?: "MP4"
-            Video(url, quality, url)
+            MediaVideo.create(url, quality, url)
         }
     }
 

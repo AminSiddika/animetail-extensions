@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.nsfwr34
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -117,7 +119,7 @@ class NsfwR34 : AnimeHttpSource() {
                     type.contains("mp4", true) -> "MP4"
                     else -> "Video"
                 }
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

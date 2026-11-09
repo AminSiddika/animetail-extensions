@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.thejoidatabase
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -106,6 +108,6 @@ class TheJoiDatabase : AnimeHttpSource() {
             ?: Regex("""data-hls-source="([^"]+)"""").find(doc.html())?.groupValues?.get(1)
             ?: return emptyList()
         val url = if (path.startsWith("http")) path else baseUrl + path
-        return listOf(Video(url, "HLS", url))
+        return listOf(MediaVideo.create(url, "HLS", url))
     }
 }

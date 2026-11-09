@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.zhentube
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -124,7 +126,7 @@ class ZhenTube : AnimeHttpSource() {
         val url = secured.takeIf { it.startsWith("http") }
             ?: master.takeIf { it.startsWith("http") }
             ?: return emptyList()
-        return listOf(Video(url, "HLS", url))
+        return listOf(MediaVideo.create(url, "HLS", url))
     }
 
     companion object {

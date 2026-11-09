@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaistreamtv
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -166,7 +168,7 @@ class HentaistreamTv : AnimeHttpSource() {
             val label = source.optString("label").ifBlank {
                 if (src.contains(".m3u8")) "HLS" else "MP4"
             }
-            videos.add(Video(src, label, src, videoHeaders))
+            videos.add(MediaVideo.create(src, label, src, videoHeaders))
         }
         return videos.distinctBy { it.url }
     }

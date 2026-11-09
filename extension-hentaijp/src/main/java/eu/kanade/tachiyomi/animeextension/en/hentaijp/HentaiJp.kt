@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaijp
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -134,7 +136,7 @@ class HentaiJp : AnimeHttpSource() {
                     .find(obj)?.groupValues?.get(1).orEmpty().ifBlank { "MP4" }
                 val url = doodUrl(raw) ?: return@mapNotNull null
                 val headers = Headers.Builder().add("Referer", referer).build()
-                Video(url, label, url, headers = headers)
+                MediaVideo.create(url, label, url, headers = headers)
             }
             .toList()
     }
@@ -159,7 +161,7 @@ class HentaiJp : AnimeHttpSource() {
         val suffix = (1..10).map { CHARS.random() }.joinToString("")
         val url = base.trim() + suffix + "?token=$token&expiry=" + System.currentTimeMillis()
         val headers = Headers.Builder().add("Referer", "https://playmogo.com/").build()
-        return listOf(Video(url, "MP4", url, headers = headers))
+        return listOf(MediaVideo.create(url, "MP4", url, headers = headers))
     }
 
     private fun fetchText(

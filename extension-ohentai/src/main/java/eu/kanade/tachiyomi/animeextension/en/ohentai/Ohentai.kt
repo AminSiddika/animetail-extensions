@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.ohentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -94,7 +96,7 @@ class Ohentai : AnimeHttpSource() {
             .map { it.groupValues[1].replace("\\/", "/") }
             .filter { it.contains(".mp4") }
             .distinct()
-            .map { Video(it, "MP4", it) }
+            .map { MediaVideo.create(it, "MP4", it) }
             .toList()
     }
 

@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaitubeonline
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -153,7 +155,7 @@ class HentaiTubeOnline : AnimeHttpSource() {
         val encoded = location.replace(" ", "%20")
         if (!encoded.startsWith("http")) return emptyList()
         return listOf(
-            Video(
+            MediaVideo.create(
                 encoded,
                 "MP4",
                 encoded,

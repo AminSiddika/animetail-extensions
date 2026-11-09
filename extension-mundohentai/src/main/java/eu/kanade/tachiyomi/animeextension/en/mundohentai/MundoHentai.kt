@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.mundohentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -121,7 +123,7 @@ class MundoHentai : AnimeHttpSource() {
             .add("Referer", "https://www.muitohentai.com/")
             .add("User-Agent", DESKTOP_UA)
             .build()
-        return listOf(Video(url, "MP4", url, headers = headers))
+        return listOf(MediaVideo.create(url, "MP4", url, headers = headers))
     }
 
     private fun fetchText(url: String, referer: String?): String? = runCatching {

@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.muchohentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -116,7 +118,7 @@ class MuchoHentai : AnimeHttpSource() {
                     "https://$server.edge.tmncdn.io$file"
                 }
                 val quality = if (url.contains(".m3u8")) "HLS" else "MP4"
-                videos += Video(url, quality, url)
+                videos += MediaVideo.create(url, quality, url)
             }
         }
 

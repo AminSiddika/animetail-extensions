@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaicity
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -103,13 +105,13 @@ class HentaiCity : AnimeHttpSource() {
         val mp4 = doc.selectFirst("meta[property=og:video:url]")?.attr("content")
             ?: doc.selectFirst("meta[property=og:video:secure_url]")?.attr("content")
         if (!mp4.isNullOrBlank()) {
-            videos += Video(mp4, "MP4", mp4)
+            videos += MediaVideo.create(mp4, "MP4", mp4)
         }
 
         doc.select("video source[src]").forEach { source ->
             val url = source.absUrl("src").ifBlank { source.attr("src") }
             if (url.isNotBlank() && videos.none { it.videoUrl == url }) {
-                videos += Video(url, if (url.contains(".m3u8")) "HLS" else "Source", url)
+                videos += MediaVideo.create(url, if (url.contains(".m3u8")) "HLS" else "Source", url)
             }
         }
 

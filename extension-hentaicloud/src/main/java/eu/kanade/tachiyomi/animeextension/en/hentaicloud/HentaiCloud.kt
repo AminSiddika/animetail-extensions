@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaicloud
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -108,6 +110,6 @@ class HentaiCloud : AnimeHttpSource() {
         return sources
             .sortedByDescending { it.second == "hd" }
             .distinctBy { it.first }
-            .map { (url, kind) -> Video(url, if (kind == "hd") "720p" else "SD", url) }
+            .map { (url, kind) -> MediaVideo.create(url, if (kind == "hd") "720p" else "SD", url) }
     }
 }

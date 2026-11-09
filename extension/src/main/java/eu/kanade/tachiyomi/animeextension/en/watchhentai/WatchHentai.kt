@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.watchhentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilter
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
@@ -139,9 +141,9 @@ class WatchHentai : AnimeHttpSource() {
         val proxied = proxyUrl(mediaUrl)
         val videos = mutableListOf<Video>()
         if (proxied != mediaUrl) {
-            videos += Video(proxied, "Proxy", proxied, headers = videoHeaders)
+            videos += MediaVideo.create(proxied, "Proxy", proxied, headers = videoHeaders)
         }
-        videos += Video(mediaUrl, "Direct", mediaUrl, headers = videoHeaders)
+        videos += MediaVideo.create(mediaUrl, "Direct", mediaUrl, headers = videoHeaders)
         return videos
     }
 

@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.animeidhentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -192,7 +194,7 @@ class AnimeIdHentai : AnimeHttpSource() {
 
         val url = runCatching { JSONObject(body).optString("url") }.getOrDefault("")
         if (!url.startsWith("http")) return emptyList()
-        return listOf(Video(url, "HD", url))
+        return listOf(MediaVideo.create(url, "HD", url))
     }
 
     private fun fingerprint(): String {

@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentai0
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -215,7 +217,7 @@ class Hentai0 : AnimeHttpSource() {
                 if (!url.startsWith("http")) continue
                 val label = Regex("""/(\d{3,4})p\.mp4""").find(url)?.groupValues?.get(1)
                     ?.let { "${it}p" } ?: "MP4"
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

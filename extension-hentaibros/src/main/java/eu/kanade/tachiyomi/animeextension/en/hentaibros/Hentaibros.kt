@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaibros
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -114,7 +116,7 @@ class Hentaibros : AnimeHttpSource() {
                 if (!url.startsWith("http")) continue
                 val type = source.optString("type")
                 val label = if (type.contains("mpegurl", true)) "HLS" else "MP4"
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

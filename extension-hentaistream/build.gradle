@@ -13,8 +13,8 @@ android {
         applicationId 'eu.kanade.tachiyomi.animeextension.en.hentaistream'
         minSdk 23
         targetSdk 34
-        versionCode 3
-        versionName '14.3'
+        versionCode 4
+        versionName '14.4'
     }
 
     signingConfigs {

@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hdhentai
 
-import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -106,12 +107,19 @@ class HdHentai : AnimeHttpSource() {
             val src = source.absUrl("src").ifBlank { source.attr("src") }
             if (src.startsWith("http")) urls.add(src)
         }
-        return urls.map { proxyVideo(it, "MP4") }
+        return urls.map { proxyMediaVideo.create(it, "MP4") }
     }
 
-    private fun proxyVideo(url: String, label: String): Video {
-        val proxied = ProxySupport.url(client, url, "$baseUrl/")
-        return Video(proxied, label, proxied, headers)
+    private fun proxyMediaVideo.create(url: String, label: String): Video {
+        val videoHeaders = headers.newBuilder()
+            .set("Referer", "$baseUrl/")
+            .set(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            )
+            .build()
+        return MediaVideo.create(url, label, url, videoHeaders)
     }
 
 }

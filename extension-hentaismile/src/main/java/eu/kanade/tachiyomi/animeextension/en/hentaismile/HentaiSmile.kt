@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaismile
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -100,7 +102,7 @@ class HentaiSmile : AnimeHttpSource() {
                     ?: continue
                 val label = textRegex.find(html)?.groupValues?.get(1)
                     ?.takeIf { it.isNotBlank() } ?: "MP4"
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

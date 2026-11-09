@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaihavenxxx
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -109,11 +111,11 @@ class HentaiHavenXxx : AnimeHttpSource() {
         val playlist = doc.selectFirst("source[src*='.m3u8']")?.absUrl("src")
             ?: Regex(""""contentUrl":"([^"]+\.m3u8[^"]*)"""").find(html)?.groupValues?.get(1)
             ?: return emptyList()
-        val videos = mutableListOf(Video(playlist, "HLS", playlist))
+        val videos = mutableListOf(MediaVideo.create(playlist, "HLS", playlist))
         // Some entries expose direct MP4 renditions in structured data.
         for (m in Regex(""""contentUrl":"([^"]+\.mp4[^"]*)"""").findAll(html)) {
             val url = m.groupValues[1].replace("\\/", "/")
-            if (url.startsWith("http")) videos.add(Video(url, "MP4", url))
+            if (url.startsWith("http")) videos.add(MediaVideo.create(url, "MP4", url))
         }
         return videos.distinctBy { it.url }
     }

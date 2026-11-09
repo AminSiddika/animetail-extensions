@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaifreak
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -104,7 +106,7 @@ class HentaiFreak : AnimeHttpSource() {
         return sources.mapIndexed { index, raw ->
             val url = raw.replace(" ", "%20").replace("[", "%5B").replace("]", "%5D")
             val label = if (url.contains(".m3u8")) "HLS" else "MP4 ${index + 1}"
-            Video(url, label, url)
+            MediaVideo.create(url, label, url)
         }
     }
 }

@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaiyoga
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -83,7 +85,7 @@ class HentaiYoga : AnimeHttpSource() {
         val playlist = Regex("""<source[^>]+src="([^"]+playlist\.m3u8[^"]*)"""")
             .find(embed)?.groupValues?.get(1)
             ?: return emptyList()
-        return listOf(Video(playlist, "HLS", playlist))
+        return listOf(MediaVideo.create(playlist, "HLS", playlist))
     }
 
     private fun fetchText(url: String): String? = runCatching {

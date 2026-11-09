@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaiastra
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -111,7 +113,7 @@ class HentaiAstra : AnimeHttpSource() {
                 .find(js)?.groupValues?.get(1)
                 ?.replace("\\/", "/")
                 ?: return@forEach
-            if (url.startsWith("http")) videos.add(Video(url, "HLS", url, headers))
+            if (url.startsWith("http")) videos.add(MediaVideo.create(url, "HLS", url, headers))
         }
         return videos.distinctBy { it.url }
     }

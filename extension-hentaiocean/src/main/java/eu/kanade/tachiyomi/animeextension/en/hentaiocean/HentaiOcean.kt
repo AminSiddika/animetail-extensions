@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaiocean
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -94,6 +96,6 @@ class HentaiOcean : AnimeHttpSource() {
             val encoded = URLEncoder.encode(decoded, "UTF-8").replace("+", "%20")
             urls.add("https://w2.hentaiocean.com/video/$encoded")
         }
-        return urls.map { url -> Video(url, "MP4", url) }
+        return urls.map { url -> MediaVideo.create(url, "MP4", url) }
     }
 }

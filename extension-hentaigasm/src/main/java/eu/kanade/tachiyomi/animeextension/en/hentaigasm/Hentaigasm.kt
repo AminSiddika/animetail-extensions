@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaigasm
 
-import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -105,13 +106,20 @@ class Hentaigasm : AnimeHttpSource() {
         return urls.distinct()
             .map { raw ->
                 val url = raw.replace(" ", "%20")
-                proxyVideo(url, "MP4")
+                proxyMediaVideo.create(url, "MP4")
             }
     }
 
-    private fun proxyVideo(url: String, label: String): Video {
-        val proxied = ProxySupport.url(client, url, "$baseUrl/")
-        return Video(proxied, label, proxied, headers)
+    private fun proxyMediaVideo.create(url: String, label: String): Video {
+        val videoHeaders = headers.newBuilder()
+            .set("Referer", "$baseUrl/")
+            .set(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            )
+            .build()
+        return MediaVideo.create(url, label, url, videoHeaders)
     }
 
     companion object {

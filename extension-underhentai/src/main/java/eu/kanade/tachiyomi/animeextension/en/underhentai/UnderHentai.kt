@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.underhentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -110,7 +112,7 @@ class UnderHentai : AnimeHttpSource() {
                 .find(unpacked)?.groupValues?.get(1)
                 ?.replace("\\/", "/")
                 ?: return@forEach
-            if (stream.startsWith("http")) videos.add(Video(stream, "HLS", stream, headers))
+            if (stream.startsWith("http")) videos.add(MediaVideo.create(stream, "HLS", stream, headers))
         }
         return videos.distinctBy { it.url }
     }

@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaihd
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -160,7 +162,7 @@ class HentaiHD : AnimeHttpSource() {
         if (!url.startsWith("http") || (type != "hls" && type != "mp4")) return emptyList()
         val label = if (type == "hls") "HLS" else "MP4"
         return listOf(
-            Video(
+            MediaVideo.create(
                 url,
                 label,
                 url,

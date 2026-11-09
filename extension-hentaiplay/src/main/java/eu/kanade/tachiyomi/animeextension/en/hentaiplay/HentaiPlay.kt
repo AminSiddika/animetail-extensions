@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaiplay
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -107,13 +109,13 @@ class HentaiPlay : AnimeHttpSource() {
         doc.select("video source[src]").forEach { source ->
             val url = source.absUrl("src").ifBlank { source.attr("src") }
             if (url.isNotBlank() && videos.none { it.videoUrl == url }) {
-                videos += Video(url, "MP4", url)
+                videos += MediaVideo.create(url, "MP4", url)
             }
         }
 
         val meta = doc.selectFirst("meta[property=og:video:url]")?.attr("content")
         if (!meta.isNullOrBlank() && videos.none { it.videoUrl == meta }) {
-            videos += Video(meta, "MP4", meta)
+            videos += MediaVideo.create(meta, "MP4", meta)
         }
 
         return videos

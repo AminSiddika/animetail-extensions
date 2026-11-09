@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaimama
 
-import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -155,12 +156,12 @@ class HentaiMama : AnimeHttpSource() {
                 SOURCE_OBJECT.findAll(embed).forEach { match ->
                     val url = match.groupValues[1].replace("\\/", "/")
                     val label = match.groupValues[2]
-                    if (url.startsWith("http")) videos.add(proxyVideo(url, label))
+                    if (url.startsWith("http")) videos.add(proxyMediaVideo.create(url, label))
                 }
                 if (videos.isEmpty()) {
                     SOURCE_FILE.findAll(embed).forEach { match ->
                         val url = match.groupValues[1].replace("\\/", "/")
-                        if (url.startsWith("http")) videos.add(proxyVideo(url, "MP4"))
+                        if (url.startsWith("http")) videos.add(proxyMediaVideo.create(url, "MP4"))
                     }
                 }
             }
@@ -177,9 +178,16 @@ class HentaiMama : AnimeHttpSource() {
         client.newCall(request).execute().use { it.body?.string() }
     }.getOrNull()
 
-    private fun proxyVideo(url: String, label: String): Video {
-        val proxied = ProxySupport.url(client, url, "$baseUrl/")
-        return Video(proxied, label, proxied, headers)
+    private fun proxyMediaVideo.create(url: String, label: String): Video {
+        val videoHeaders = headers.newBuilder()
+            .set("Referer", "$baseUrl/")
+            .set(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            )
+            .build()
+        return MediaVideo.create(url, label, url, videoHeaders)
     }
 
     companion object {

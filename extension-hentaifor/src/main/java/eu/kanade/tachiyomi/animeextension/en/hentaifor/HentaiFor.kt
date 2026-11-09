@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaifor
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -131,7 +133,7 @@ class HentaiFor : AnimeHttpSource() {
                 if (url.startsWith("//")) url = "https:$url"
                 if (!url.startsWith("http")) continue
                 val label = source.optString("label").ifBlank { "HLS" }
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

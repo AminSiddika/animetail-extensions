@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hanime
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -128,7 +130,7 @@ class HAnime : AnimeHttpSource() {
                 val label = Regex(""""label"\s*:\s*"([^"]*)"""")
                     .find(obj)?.groupValues?.get(1).orEmpty().ifBlank { "MP4" }
                 val headers = Headers.Builder().add("Referer", embedUrl).build()
-                Video(url, label, url, headers = headers)
+                MediaVideo.create(url, label, url, headers = headers)
             }
             .toList()
     }

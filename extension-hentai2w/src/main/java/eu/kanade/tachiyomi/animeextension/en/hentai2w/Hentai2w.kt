@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentai2w
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -126,7 +128,7 @@ class Hentai2w : AnimeHttpSource() {
             .add("Cookie", "age_confirmed=$cookie")
             .add("Referer", "$baseUrl/")
             .build()
-        return listOf(Video(playlist, "HLS", playlist, headers = headers))
+        return listOf(MediaVideo.create(playlist, "HLS", playlist, headers = headers))
     }
 
     private fun getAgeCookie(): String? {

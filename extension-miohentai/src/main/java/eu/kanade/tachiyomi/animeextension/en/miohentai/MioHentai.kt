@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.miohentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -148,12 +150,12 @@ class MioHentai : AnimeHttpSource() {
                 client.newCall(request).execute().use { it.body?.string() }
             }.getOrNull()?.trim()
             if (!fresh.isNullOrBlank() && fresh.startsWith("http")) {
-                return listOf(Video(fresh, "MP4", fresh))
+                return listOf(MediaVideo.create(fresh, "MP4", fresh))
             }
         }
 
         val fallback = config.optString("videoSrc")
-        if (fallback.startsWith("http")) return listOf(Video(fallback, "MP4", fallback))
+        if (fallback.startsWith("http")) return listOf(MediaVideo.create(fallback, "MP4", fallback))
         return emptyList()
     }
 

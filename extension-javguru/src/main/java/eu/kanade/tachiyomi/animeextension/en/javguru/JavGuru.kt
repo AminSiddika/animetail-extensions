@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.javguru
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import android.util.Base64
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -128,7 +130,7 @@ class JavGuru : AnimeHttpSource() {
                 .set("Referer", finalUrl)
                 .set("User-Agent", DESKTOP_UA)
                 .build()
-            videos.add(Video(chosen, "HLS", chosen, videoHeaders))
+            videos.add(MediaVideo.create(chosen, "HLS", chosen, videoHeaders))
         }
         return videos
     }

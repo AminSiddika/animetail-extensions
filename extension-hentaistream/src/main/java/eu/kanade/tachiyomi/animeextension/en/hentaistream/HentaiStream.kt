@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaistream
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -127,13 +129,13 @@ class HentaiStream : AnimeHttpSource() {
             frameDoc.select("video source[src]").forEach { source ->
                 val url = source.absUrl("src").ifBlank { source.attr("src") }
                 if (url.isNotBlank() && videos.none { it.videoUrl == url }) {
-                    videos += Video(url, "Source ${index + 1}", url)
+                    videos += MediaVideo.create(url, "Source ${index + 1}", url)
                 }
             }
             frameDoc.select("video[src]").forEach { video ->
                 val url = video.absUrl("src").ifBlank { video.attr("src") }
                 if (url.isNotBlank() && videos.none { it.videoUrl == url }) {
-                    videos += Video(url, "Source ${index + 1}", url)
+                    videos += MediaVideo.create(url, "Source ${index + 1}", url)
                 }
             }
         }

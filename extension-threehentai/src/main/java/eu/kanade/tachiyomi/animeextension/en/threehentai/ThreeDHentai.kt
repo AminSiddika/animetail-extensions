@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.threehentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -102,6 +104,6 @@ class ThreeDHentai : AnimeHttpSource() {
         doc.select("video source[src]").forEach { source ->
             source.absUrl("src").takeIf { it.startsWith("http") }?.let(urls::add)
         }
-        return urls.map { url -> Video(url, if (url.contains(".m3u8")) "HLS" else "MP4", url) }
+        return urls.map { url -> MediaVideo.create(url, if (url.contains(".m3u8")) "HLS" else "MP4", url) }
     }
 }

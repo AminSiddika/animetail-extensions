@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.animesex
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -95,7 +97,7 @@ class AnimeSex : AnimeHttpSource() {
         }
         return urls.distinct().map { url ->
             val label = if (url.contains(".m3u8")) "HLS" else "MP4"
-            Video(url, label, url)
+            MediaVideo.create(url, label, url)
         }
     }
 }

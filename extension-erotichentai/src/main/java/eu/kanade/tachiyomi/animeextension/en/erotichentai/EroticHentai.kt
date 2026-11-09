@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.erotichentai
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -120,7 +122,7 @@ class EroticHentai : AnimeHttpSource() {
                 if (path.isBlank()) continue
                 val url = if (path.startsWith("http")) path else "https://aniporn.com$path"
                 val label = if (i == 0) "MP4" else "MP4 ${i + 1}"
-                add(Video(url, label, url))
+                add(MediaVideo.create(url, label, url))
             }
         }.distinctBy { it.url }
     }

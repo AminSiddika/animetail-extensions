@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaihorizon
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -113,7 +115,7 @@ class HentaiHorizon : AnimeHttpSource() {
             ?: return emptyList()
 
         val headers = Headers.Builder().add("Referer", "$baseUrl/").build()
-        return listOf(Video(playlist, "HLS", playlist, headers = headers))
+        return listOf(MediaVideo.create(playlist, "HLS", playlist, headers = headers))
     }
 
     private fun fetchText(url: String, referer: String?): String? = runCatching {

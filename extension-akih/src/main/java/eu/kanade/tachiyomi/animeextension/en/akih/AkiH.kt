@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.akih
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -118,7 +120,7 @@ class AkiH : AnimeHttpSource() {
                 val page = fetchText(serverUrl, watchUrl) ?: continue
                 val token = STREAM_TOKEN.find(page)?.groupValues?.get(1) ?: continue
                 val url = "https://aki-h.stream/file/$token/"
-                add(Video(url, "$name (HLS)", url))
+                add(MediaVideo.create(url, "$name (HLS)", url))
             }
         }.distinctBy { it.url }
     }

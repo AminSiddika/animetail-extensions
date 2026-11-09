@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.hentaigem
 
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -113,7 +115,7 @@ class HentaiGem : AnimeHttpSource() {
         val html = response.asJsoup().html()
         val url = VIDEO_URL.find(html)?.groupValues?.get(1) ?: return emptyList()
         if (!url.startsWith("http")) return emptyList()
-        return listOf(Video(url, "MP4", url))
+        return listOf(MediaVideo.create(url, "MP4", url))
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.animeextension.en.cartoonporn
 
-import eu.kanade.tachiyomi.animeextension.proxy.ProxySupport
+import eu.kanade.tachiyomi.animeextension.proxy.MediaVideo
+
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -96,18 +97,25 @@ class CartoonPorn : AnimeHttpSource() {
         val videos = mutableListOf<Video>()
         val main = VIDEO_URL_FLASH.find(html)?.groupValues?.get(1)?.replace("\\/", "/")
         if (main != null && main.startsWith("http")) {
-            videos.add(proxyVideo(main, "720p"))
+            videos.add(proxyMediaVideo.create(main, "720p"))
         }
         val fallback = EVENT_URL.find(html)?.groupValues?.get(1)?.replace("\\/", "/")
         if (fallback != null && fallback.startsWith("http") && videos.none { it.url == fallback }) {
-            videos.add(proxyVideo(fallback, "480p"))
+            videos.add(proxyMediaVideo.create(fallback, "480p"))
         }
         return videos
     }
 
-    private fun proxyVideo(url: String, label: String): Video {
-        val proxied = ProxySupport.url(client, url, "$baseUrl/")
-        return Video(proxied, label, proxied, headers)
+    private fun proxyMediaVideo.create(url: String, label: String): Video {
+        val videoHeaders = headers.newBuilder()
+            .set("Referer", "$baseUrl/")
+            .set(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            )
+            .build()
+        return MediaVideo.create(url, label, url, videoHeaders)
     }
 
     companion object {
