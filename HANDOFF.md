@@ -61,6 +61,9 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - Hanime.red` | `extension-hanimered/` | `...en.hanimered` | `https://hanime.red` | 14.1 |
 | `@JalebiBae - Rule34Video` | `extension-rule34video/` | `...en.rule34video` | `https://rule34video.com` | 14.1 |
 | `@JalebiBae - HentaiHaven.xxx` | `extension-hentaihavenxxx/` | `...en.hentaihavenxxx` | `https://hentaihaven.xxx` | 14.1 |
+| `@JalebiBae - AnimeSex` | `extension-animesex/` | `...en.animesex` | `https://animesex.club` | 14.1 |
+| `@JalebiBae - 3DHentai` | `extension-3dhentai/` | `...en.3dhentai` | `https://3dhentai.it.com` | 14.1 |
+| `@JalebiBae - Rule34s` | `extension-rule34s/` | `...en.rule34s` | `https://rule34s.com` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -114,6 +117,9 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | Hanime.red | `5375457633777705498` |
 | Rule34Video | `1031421854898827454` |
 | HentaiHaven.xxx | `746394674563039269` |
+| AnimeSex | `152010478345835201` |
+| 3DHentai | `8355957899450964082` |
+| Rule34s | `5328116957017708020` |
 ---
 
 ## Scraping notes per site
@@ -418,6 +424,21 @@ Homepages returned 200 with real content on 2026-11-09:
 - `underhentai.net`, `animesex.club`, `3dhentai.it.com`, `hentaiastra.com`, `hdhentai.tv`
 - `hentai.yoga`, `r34tube.com`, `rule34s.com`, `watchanimehentai.com`
 - `hentaiocean.com` — direct MP4 works, but the site exposes only 20 recent items and has no search endpoint.
+
+### AnimeSex (WordPress)
+- Home listing (60 items; `/page/N/` ignored); search `/?s=<q>`, page 2 `/page/2/?s=<q>`
+- Cards `a[href^=https://animesex.club/video/]`
+- Video: `meta[itemprop=contentUrl]` → direct MP4 (often on `povblowjob.net`); no headers.
+
+### 3DHentai (WordPress)
+- Latest `/videos`, paged `/videos?page=N`; search `/videos?search=<q>`
+- Cards `a[href^=https://3dhentai.it.com/video/]`
+- Video: JSON-LD `contentUrl` → direct MP4 on `/uploads/videos/...`; no headers.
+
+### Rule34s (Next.js)
+- Home listing (62 items; only one page); search `/search?q=<q>&page=N`
+- Cards `a[href^=/watch/]`; detail `/watch/<slug>`
+- Video: JSON-LD `contentUrl` → direct MP4; no headers.
 
 ---
 
