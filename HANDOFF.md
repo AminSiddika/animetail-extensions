@@ -27,6 +27,16 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - NSFWR34` | `extension-nsfwr34/` | `...en.nsfwr34` | `https://nsfwr34.com` | 14.1 |
 | `@JalebiBae - Hentai-Moon` | `extension-hentaimoon/` | `...en.hentaimoon` | `https://hentai-moon.com` | 14.1 |
 | `@JalebiBae - HentaiHaven` | `extension-hentaihaven/` | `...en.hentaihaven` | `https://hentaihaven.icu` | 14.1 |
+| `@JalebiBae - UncensoredHentai` | `extension-uncensoredhentai/` | `...en.uncensoredhentai` | `https://uncensoredhentai.xxx` | 14.1 |
+| `@JalebiBae - The JOI Database` | `extension-thejoidatabase/` | `...en.thejoidatabase` | `https://www.the-joi-database.com` | 14.1 |
+| `@JalebiBae - HentaiHaven.com` | `extension-hentaihavencom/` | `...en.hentaihavencom` | `https://hentaihaven.com` | 14.1 |
+| `@JalebiBae - MioHentai` | `extension-miohentai/` | `...en.miohentai` | `https://miohentai.com` | 14.1 |
+| `@JalebiBae - Aki-H` | `extension-akih/` | `...en.akih` | `https://aki-h.com` | 14.1 |
+| `@JalebiBae - HentaiGem` | `extension-hentaigem/` | `...en.hentaigem` | `https://www.hentaigem.com` | 14.1 |
+| `@JalebiBae - HanimeHentai` | `extension-hanimehentai/` | `...en.hanimehentai` | `https://hanimehentai.tv` | 14.1 |
+| `@JalebiBae - HentaiHD` | `extension-hentaihd/` | `...en.hentaihd` | `https://hentaihd.net` | 14.1 |
+| `@JalebiBae - Hentais.Tube` | `extension-hentaistube/` | `...en.hentaistube` | `https://www.hentais.tube` | 14.1 |
+| `@JalebiBae - HentaiTube.online` | `extension-hentaitubeonline/` | `...en.hentaitubeonline` | `https://www.hentaitube.online` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -46,7 +56,16 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | NSFWR34 | `2124152996770265631` |
 | Hentai-Moon | `1752074658394183681` |
 | HentaiHaven | `1700779054663752842` |
-
+| UncensoredHentai | `4262860293476903340` |
+| The JOI Database | `3496703588188214876` |
+| HentaiHaven.com | `9110705273108960989` |
+| MioHentai | `351232038236878912` |
+| Aki-H | `3876317610373167042` |
+| HentaiGem | `843337943156741000` |
+| HanimeHentai | `637031594592778223` |
+| HentaiHD | `6913463672953127187` |
+| Hentais.Tube | `1208998978531376256` |
+| HentaiTube.online | `8165307191022465040` |
 ---
 
 ## Scraping notes per site
@@ -122,6 +141,78 @@ Both use the same Next.js frontend and `nhplayer.com` player.
   `rot13 → base64` repeated 3× → JSON `{en, iv, uri}`. POST `<uri>/api.php` with
   `action=zarat_get_data_player_ajax&a=<en>&b=<iv>` → `data.sources[].src` (open HLS on
   `octopusmanifest.org`, no auth header or Referer needed for the playlist).
+
+### UncensoredHentai (Next.js, nhplayer)
+- Latest `/latest/` / `/latest/page/N/`, popular `/popular/` / `/popular/page/N/`
+- Search `/search/?q=<q>`, paged `/search/page/N/?q=<q>`
+- Items `article.catalog-card` → `a.catalog-card-link` (`aria-label` = title), poster `img[src]`
+- Details: `h1`, `og:image`, meta description, genres `a[href*='/genres/']`
+- Video uses the same **nhplayer** resolver as `Hentai.TV`/`AnimeIDHentai` (PoW + DOM parts + fingerprint).
+
+### The JOI Database
+- Listing `/videos?page=N` (48/page), search `/videos?search=<q>&page=N`
+- Items `div.video-thumbnail-block` → `a[href*='/watch/']`, title `h6[title]`, thumb `asis-video-thumbnail[thumbnail]`
+- Details: first `h4`, `og:image`, meta description
+- Video: `video#player[data-hls-source]` = `/api/stream/<id>` (master playlist with relative 360/720/1080 variants).
+
+### HentaiHaven.com (WordPress vraven — distinct from hentaihaven.icu)
+- Latest/popular `/`, `/page/N/`; search `?s=<q>`, paged `/page/N/?s=<q>`
+- Items `div.item` → `a[href*='/video/']`, title `.title`, thumb `img[src]`
+- Series page `/video/<slug>/`, episodes `/video/<slug>/episode-N` (selector `.hentai__episodes`)
+- Playback: `iframe[src*='player-logic/player.php']` → `meta[name=x-secure-token]` →
+  `rot13 → base64` ×3 → JSON `{en, iv}` → POST `wp-content/plugins/player-logic/api.php`
+  with `action=zarat_get_data_player_ajax&a=en&b=iv` → open HLS on `octopusmanifest.org`.
+
+### MioHentai (WordPress)
+- Latest `/page/N/`; items `article.blog-view` → `a.post-thumbnail`, title `h3`, thumb `img[data-src]`
+- Search uses WP REST: `/wp-json/wp/v2/posts?search=<q>&per_page=20&page=N&_embed=1`
+- Details: `h1`, `og:image`, meta description, tags `a[href*='/tag/']`
+- Video: `window.videoPlayerBootConfig` → POST `admin-ajax.php`
+  `action=get_video_url&post_id=<id>&nonce=<nonce>` → fresh `cdn.miohentai.com` MP4.
+
+### Aki-H (series + episodes)
+- Latest `/latest/?page=N`, popular `/popular/?page=N`; search `/search/?q=<q>` (single page)
+- Items `div.ak-card` → `a.ak-card__poster`, title attr, thumb `img[data-src]`
+- Series `/<slug>/`: `h1 .dynamic-name`, meta description, genres `/genre/`, episodes
+  `div.ak-ep a.ak-ep__thumb` → `/watch/<id>/`
+- Video: `https://v.aki-h.com/api/servers/<id>` → server page → `aki-h.stream/v/<token>`
+  → `https://aki-h.stream/file/<token>/` (HLS master: 360/720/1080).
+
+### HentaiGem (KVS)
+- Latest `/latest-updates/N/`, popular `/most-popular/N/`; search `?q=<q>&from_videos=N`
+- Items `div.list-videos div.item` → `a[href*='/videos/']`, title attr, thumb `img[data-original]`
+- Details: `h1`, `og:image`, genres `/categories/`, tags `/tags/`
+- Video: `video_url: '...'` MP4 (signed per-video `v-acctoken`, 302 to `*.ahcdn.com`; no Referer).
+
+### HanimeHentai (WordPress vraven; clone of HentaiHaven UI)
+- Latest `/video/`, `/video/page/N/`; popular = homepage block whose `h3.htitle` is `Trending`
+- Search `?s=<q>`, paged `/page/N/?s=<q>`
+- Items `div.item` → `a[href*='/video/']`, `.title`, `img[src]`
+- Episodes `li.hentai__chapter a[href]` (`/episode-N`)
+- Playback: `iframe[src*='player-logic/player.php']`; base64-decode `data` → split
+  `:|::|:` into `en` and `iv_raw`; POST `api.php` with `b = base64(iv_raw)`
+  (`action=zarat_get_data_player_ajax`) → open HLS on `octopusmanifest.org`.
+
+### HentaiHD (WordPress animehub)
+- Latest `/anime/page/N/`, popular `/anime/page/N/?sort=popular`; search `?s=<q>`
+- Items `article.anime-card` → `a.anime-card__link`, title `h3`, poster `img`
+- Series `/anime/<slug>/`: episodes `div.episode-row` (`a.episode-number` + variant badges)
+- Video: `media-player[data-esv-ulid]` → GET `wp-json/animehub/v1/player-nonce` →
+  POST `wp-json/animehub/v1/video-url` `{id,type:"esv",nonce}` → HLS on `sv1.animecdn.top`.
+  CDN accepts no Referer or `Referer: https://hentaihd.net/`; **foreign Referer = 403**.
+
+### Hentais.Tube and HentaiTube.online (same CMS)
+- Series model: `/hentai-list/`, `/hentai-list/N/` (24/page); search `/search/<q>/`
+  with spaces as `+` (`%20` in path = Cloudflare 403); no popular route — aliased to the list.
+- Items `article.item.tvshows` → `div.data h3 a`, thumb `img[src]`
+- Series page: `#single .data h1`, `og:image`, genres `/genre/`, description `.wp-content p`
+- Episodes `#episodes article.item.se.episodes` → `.season_m a[href]`, label `.c` (`Episode N`)
+- Video: episode page `player.php?padrao=<token>` →
+  * hentais.tube: GET `/p2.php?id=<token>` with `Referer: https://www.hentais.tube/`
+  * hentaitube.online: GET `/player.php?padrao=<token>` → `<source src="/p2.php?id=...">`
+    → GET that with `Referer: https://www.hentaitube.online/`
+  Both 302 to `server4.baixarhentais.com/...mp4` (no signing; spaces in `Location` must be
+  percent-encoded; CDN requires the site Referer).
 
 ---
 
