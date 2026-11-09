@@ -20,6 +20,10 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - MuchoHentai` | `extension-muchohentai/` | `...en.muchohentai` | `https://muchohentai.com` | 14.3 |
 | `@JalebiBae - Ohentai` | `extension-ohentai/` | `...en.ohentai` | `https://ohentai.org` | 14.3 |
 | `@JalebiBae - HentaiPlay` | `extension-hentaiplay/` | `...en.hentaiplay` | `https://hentaiplay.net` | 14.3 |
+| `@JalebiBae - NaughtyHentai` | `extension-naughtyhentai/` | `...en.naughtyhentai` | `https://www.naughtyhentai.com` | 14.3 |
+| `@JalebiBae - HentaiStream` | `extension-hentaistream/` | `...en.hentaistream` | `https://tube.hentaistream.com` | 14.3 |
+| `@JalebiBae - Hentai.TV` | `extension-hentaitv/` | `...en.hentaitv` | `https://hentai.tv` | 14.3 |
+| `@JalebiBae - AnimeIDHentai` | `extension-animeidhentai/` | `...en.animeidhentai` | `https://animeidhentai.com` | 14.3 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -70,10 +74,17 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 - Items `div.item.item-post`, pagination `.wp-pagenavi .pages` ("Page X of Y")
 - Video: `<video><source src="https://hentaiplanet.info/...mp4">`. No Referer needed.
 
-### Not included: animeidhentai.com
-- Player is `nhplayer.com`: PoW (`SHA-256` first byte 0) + randomized DOM parts + browser fingerprint, answered by `get-video-url-v2.php`.
-- Direct HTTP replay returns `{"error":"Access denied","code":"V5"}`. Requires a real browser/JS runtime, so no reliable extension extraction.
-- Details/search alone are scrapeable, but playback would fail.
+### Hentai.TV and AnimeIDHentai (nhplayer resolver)
+Both use the same Next.js frontend and `nhplayer.com` player.
+
+- Browse/search: parse escaped episode objects from the RSC payload
+  (`\"title\",\"titleSlug\",\"ep\",\"backdrop\"`) → `/series/<titleSlug>/episode-<ep>`
+- Playback: episode page → `nhplayer.com/v/<id>/` → `player.php?vid=...` → `player-core-v2.php`
+- The resolver replicates the site JS: reads the randomized DOM challenge parts (`p1..p4`, `ts`),
+  the `sc`/`rid` tokens, solves the SHA-256 proof of work (first byte 0), builds the browser
+  fingerprint (`fp`, desktop 1920x1080), then calls `get-video-url-v2.php` for a signed MP4.
+- The signed URL expires quickly and must be resolved at playback time.
+- A consistent desktop UA is required; the fingerprint and UA must match.
 
 ---
 
