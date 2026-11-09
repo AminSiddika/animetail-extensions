@@ -41,16 +41,21 @@ class WatchAnimeHentai : AnimeHttpSource() {
 
     private fun parseList(response: Response): AnimesPage {
         val doc = response.asJsoup()
-        val items = doc.select("a[href^=/info/]")
-            .mapNotNull { link ->
+        val items = doc.select("article.item")
+            .mapNotNull { article ->
+                val link = article.select("a[href^='/info/']")
+                    .firstOrNull { it.text().isNotBlank() || it.attr("title").isNotBlank() }
+                    ?: article.selectFirst("a[href^='/info/']")
+                    ?: return@mapNotNull null
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
                 if (!href.contains("/info/")) return@mapNotNull null
-                val img = link.selectFirst("img")
+                val img = article.selectFirst("img")
                 SAnime.create().apply {
                     setUrlWithoutDomain(href)
-                    title = link.selectFirst("h3")?.text()?.trim()?.takeIf { it.isNotBlank() }
+                    title = article.selectFirst("h3 a")?.text()?.trim()?.takeIf { it.isNotBlank() }
+                        ?: link.attr("title").trim().takeIf { it.isNotBlank() }
                         ?: img?.attr("alt")?.trim()?.takeIf { it.isNotBlank() }
-                        ?: link.attr("title").trim()
+                        ?: href.substringAfter("/info/").trimEnd('/')
                     thumbnail_url = img?.absUrl("src")
                 }
             }
@@ -69,7 +74,7 @@ class WatchAnimeHentai : AnimeHttpSource() {
         return SAnime.create().apply {
             title = doc.selectFirst("h1")?.text()?.trim().orEmpty()
             thumbnail_url = doc.selectFirst("meta[property=og:image]")?.attr("content")
-            genre = doc.select("a[href^=/genre/]")
+            genre = doc.select("a[href^='/genre/']")
                 .map { it.text().trim() }
                 .distinct()
                 .joinToString(", ")
@@ -81,7 +86,7 @@ class WatchAnimeHentai : AnimeHttpSource() {
 
     override fun episodeListParse(response: Response): List<SEpisode> {
         val doc = response.asJsoup()
-        val episodes = doc.select("a[href^=/episodes/]")
+        val episodes = doc.select("a[href^='/episodes/']")
             .mapNotNull { link ->
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
                 if (href.isBlank()) return@mapNotNull null
@@ -109,7 +114,7 @@ class WatchAnimeHentai : AnimeHttpSource() {
     override fun videoListParse(response: Response): List<Video> {
         val doc = response.asJsoup()
         val videos = mutableListOf<Video>()
-        doc.select("iframe[src*=/players/p2/]").forEach { iframe ->
+        doc.select("iframe[src*='/players/p2/']").forEach { iframe ->
             val playerUrl = iframe.absUrl("src").ifBlank { iframe.attr("src") }
             val playerHtml = fetchText(playerUrl, response.request.url.toString()) ?: return@forEach
             val source = Jsoup.parse(playerHtml).selectFirst("source[src]")?.attr("src")

@@ -45,7 +45,7 @@ class HentaiSea : AnimeHttpSource() {
         val doc = response.asJsoup()
         val items = doc.select("article.item")
             .mapNotNull { article ->
-                val link = article.selectFirst("a[href^=https://hentaisea.com/videos/]")
+                val link = article.selectFirst("a[href^='https://hentaisea.com/videos/']")
                     ?: return@mapNotNull null
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
                 val img = article.selectFirst("img")

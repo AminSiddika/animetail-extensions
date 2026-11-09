@@ -84,7 +84,7 @@ class HentaiMama : AnimeHttpSource() {
 
     override fun episodeListParse(response: Response): List<SEpisode> {
         val doc = response.asJsoup()
-        val episodes = doc.select("a[href^=https://hentaimama.io/episodes/]")
+        val episodes = doc.select("a[href^='https://hentaimama.io/episodes/']")
             .mapNotNull { link ->
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
                 if (href.isBlank()) return@mapNotNull null
@@ -114,7 +114,7 @@ class HentaiMama : AnimeHttpSource() {
         val postId = doc.selectFirst("[data-post]")?.attr("data-post")
             ?.takeIf { it.isNotBlank() }
             ?: return emptyList()
-        val options = doc.select("a[href^=#option-]")
+        val options = doc.select("a[href^='#option-']")
             .mapNotNull { link ->
                 Regex("#option-(\\d+)").find(link.attr("href"))
                     ?.groupValues?.get(1)?.toIntOrNull()

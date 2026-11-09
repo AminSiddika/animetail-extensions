@@ -43,7 +43,7 @@ class HdHentai : AnimeHttpSource() {
         val items = doc.select("div.video-block")
             .mapNotNull { block ->
                 val link = block.selectFirst("a.thumb[href]")
-                    ?: block.selectFirst("a[href^=https://hdhentai.tv/fluffy/]")
+                    ?: block.selectFirst("a[href^='https://hdhentai.tv/fluffy/']")
                     ?: return@mapNotNull null
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
                 val img = block.selectFirst("img")
@@ -75,7 +75,7 @@ class HdHentai : AnimeHttpSource() {
                 ?.replace(Regex("\\s+Hentai Porn$"), "")
                 .orEmpty()
             thumbnail_url = doc.selectFirst("meta[property=og:image]")?.attr("content")
-            genre = doc.select("a[href^=https://hdhentai.tv/category/]")
+            genre = doc.select("a[href^='https://hdhentai.tv/category/']")
                 .map { it.text().trim() }
                 .distinct()
                 .joinToString(", ")

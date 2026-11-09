@@ -40,7 +40,7 @@ class R34Tube : AnimeHttpSource() {
 
     private fun parseList(response: Response): AnimesPage {
         val doc = response.asJsoup()
-        val items = doc.select("a[href^=/v/]")
+        val items = doc.select("a[href^='/v/']")
             .mapNotNull { link ->
                 val href = link.absUrl("href").ifBlank { link.attr("href") }
                 if (!VIDEO_URL.matches(href)) return@mapNotNull null
