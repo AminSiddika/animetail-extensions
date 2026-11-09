@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = 'watchhentai-extensions'
 include ':extension'
+include ':extension-hentaicity'
+include ':extension-muchohentai'

@@ -1,11 +1,23 @@
-# WatchHentai — Aniyomi/Animetail extension
+# Animetail Extensions
 
-An [Aniyomi](https://aniyomi.org)-compatible extension for `https://watchhentai.net`, plus a self-hosted extension repository ("library") so it can be installed and updated from inside Animetail/Mihon-style apps.
+An Aniyomi/Animetail-compatible extension repository ("library") with a self-hosted store, so the extensions can be installed and updated from inside Animetail/Mihon-style apps. Signing, CI and the repo index are already wired up.
+
+## Sources in this repo
+
+| Source | Module | Notes |
+|---|---|---|
+| Watch Hentai | `extension/` | series + episodes, local proxy for the MP4s |
+| HentaiCity | `extension-hentaicity/` | video-per-entry, direct MP4 + HLS |
+| MuchoHentai | `extension-muchohentai/` | video-per-entry, HLS via `tmncdn.io` |
+
+`animeidhentai.com` is **not** included: its player (`nhplayer.com`) runs a proof-of-work + browser-fingerprint gate whose `get-video-url-v2.php` rejects non-browser clients (`{"error":"Access denied","code":"V5"}`). Details/search could be scraped, but video playback would not work.
 
 ```
-extension/                          Android app module = one extension APK
+extension/                          Watch Hentai (series + episodes)
+extension-hentaicity/               HentaiCity (video per entry)
+extension-muchohentai/              MuchoHentai (video per entry)
   src/main/AndroidManifest.xml      extension metadata (class, NSFW flag)
-  src/main/java/.../WatchHentai.kt  the scraper
+  src/main/java/.../                the scraper
   src/main/res/mipmap-*/            launcher icons
 repo/
   index.min.json                    extension index the app reads
