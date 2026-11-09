@@ -53,6 +53,7 @@ class HentaiHavenRed : AnimeHttpSource() {
             root.select("a[href]")
         } else {
             doc.select("div.grid > a[href]")
+                .toList()
                 .filter { it.selectFirst("figure.main-figure") != null }
         }
         val items = cards.mapNotNull { card ->
