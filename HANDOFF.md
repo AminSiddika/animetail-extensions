@@ -77,6 +77,8 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - UnderHentai` | `extension-underhentai/` | `...en.underhentai` | `https://www.underhentai.net` | 14.1 |
 | `@JalebiBae - HentaiAstra` | `extension-hentaiastra/` | `...en.hentaiastra` | `https://hentaiastra.com` | 14.1 |
 | `@JalebiBae - hanime.tv` | `extension-hanimetv/` | `...en.hanimetv` | `https://hanime.tv` | 14.1 |
+| `@JalebiBae - Hentaigasm` | `extension-hentaigasm/` | `...en.hentaigasm` | `https://hentaigasm.com` | 14.1 |
+| `@JalebiBae - Hentai4K` | `extension-hentai4k/` | `...en.hentai4k` | `https://hentai4k.com` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -146,6 +148,8 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | UnderHentai | `8720741465438590649` |
 | HentaiAstra | `4569267103063950831` |
 | hanime.tv | `5358250886824217988` |
+| Hentaigasm | `4755056524044778684` |
+| Hentai4K | `2517983448850670883` |
 ---
 
 ## Scraping notes per site
@@ -549,6 +553,18 @@ Both use the same Next.js frontend and `nhplayer.com` player.
   `Referer: https://hanime.tv/` and `Origin: https://hanime.tv`.
 - `guest.freeanimehentai.net/api/v11/handshake` is Cloudflare-blocked for this origin;
   use the `auth.hanime.tv` handshake route, which accepts the signature without login.
+
+### Hentaigasm (WordPress detube)
+- Listing `/`, paged `/page/N/`; search `/?s=<q>`
+- Cards `div.item` → `a.clip-link[href]`, title `h2.title a`, thumbnail `img.src`
+- Video: detail `jwplayer("player_01").setup({ file: "https://hgasm2.com/<title>.mp4" … })`;
+  encode spaces as `%20`. Fallback download link on `hgasm3.com`.
+
+### Hentai4K (KVS)
+- Listing `/`, paged `/?page=N`; search `/search/<q>/` (page 2 via `?page=2`)
+- Cards `a[href^='https://hentai4k.com/video/']`, title from `a[title]` / `img.alt`
+- Video: flashvars `video_url` (480p direct MP4 with `v-acctoken`); `video_alt_url` is
+  `https://hentai4k.com/?login` for 720p and is skipped. Add `Referer: https://hentai4k.com/`.
 
 ---
 

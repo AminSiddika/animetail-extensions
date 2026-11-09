@@ -1,0 +1,119 @@
+package eu.kanade.tachiyomi.animeextension.en.hentai4k
+
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.Video
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
+import eu.kanade.tachiyomi.network.GET
+import eu.kanade.tachiyomi.util.asJsoup
+import okhttp3.Request
+import okhttp3.Response
+import java.net.URLEncoder
+
+class Hentai4k : AnimeHttpSource() {
+
+    override val name = "@JalebiBae - Hentai4K"
+    override val id: Long = 2517983448850670883L
+    override val baseUrl = "https://hentai4k.com"
+    override val lang = "en"
+    override val supportsLatest = true
+
+    override fun popularAnimeRequest(page: Int): Request = GET(listUrl(page), headers)
+
+    override fun popularAnimeParse(response: Response): AnimesPage = parseList(response)
+
+    override fun latestUpdatesRequest(page: Int): Request = GET(listUrl(page), headers)
+
+    override fun latestUpdatesParse(response: Response): AnimesPage = parseList(response)
+
+    override fun searchAnimeRequest(page: Int, query: String, filters: AnimeFilterList): Request {
+        val encoded = URLEncoder.encode(query, "UTF-8").replace("+", "%20")
+        val url = if (page <= 1) {
+            "$baseUrl/search/$encoded/"
+        } else {
+            "$baseUrl/search/$encoded/?page=$page"
+        }
+        return GET(url, headers)
+    }
+
+    override fun searchAnimeParse(response: Response): AnimesPage = parseList(response)
+
+    private fun listUrl(page: Int): String =
+        if (page <= 1) "$baseUrl/" else "$baseUrl/?page=$page"
+
+    private fun parseList(response: Response): AnimesPage {
+        val doc = response.asJsoup()
+        val items = doc.select("a[href^='https://hentai4k.com/video/']")
+            .mapNotNull { link ->
+                val href = link.absUrl("href").ifBlank { link.attr("href") }
+                if (!VIDEO_URL.matches(href)) return@mapNotNull null
+                val img = link.selectFirst("img")
+                SAnime.create().apply {
+                    setUrlWithoutDomain(href)
+                    title = link.attr("title").trim().takeIf { it.isNotBlank() }
+                        ?: img?.attr("alt")?.trim().orEmpty()
+                    thumbnail_url = img?.absUrl("src")
+                }
+            }
+            .distinctBy { it.url }
+
+        val current = Regex("[?&]page=(\\d+)").find(response.request.url.toString())
+            ?.groupValues?.get(1)?.toIntOrNull() ?: 1
+        val hasNext = doc.select("a[href]").any {
+            it.attr("href").contains("page=${current + 1}")
+        } || items.size >= 20
+        return AnimesPage(items, hasNext)
+    }
+
+    override fun animeDetailsParse(response: Response): SAnime {
+        val doc = response.asJsoup()
+        return SAnime.create().apply {
+            title = doc.selectFirst("h1")?.text()?.trim().orEmpty()
+            thumbnail_url = doc.selectFirst("meta[property=og:image]")?.attr("content")
+            genre = doc.select("a[href*='/tags/']")
+                .map { it.text().trim() }
+                .distinct()
+                .joinToString(", ")
+            description = doc.selectFirst("meta[name=description]")?.attr("content")
+            status = SAnime.COMPLETED
+            initialized = true
+        }
+    }
+
+    override fun episodeListParse(response: Response): List<SEpisode> = listOf(
+        SEpisode.create().apply {
+            setUrlWithoutDomain(response.request.url.toString())
+            name = "Full Video"
+            episode_number = 1f
+        },
+    )
+
+    override fun videoListParse(response: Response): List<Video> {
+        val html = response.asJsoup().html()
+        val videos = mutableListOf<Video>()
+        val urlMatch = VIDEO_URL_FLASH.find(html)
+        if (urlMatch != null) {
+            val url = urlMatch.groupValues[1].replace("\\/", "/")
+            val label = LABEL_FLASH.find(html)?.groupValues?.get(1)
+                ?.takeIf { it.isNotBlank() } ?: "480p"
+            if (url.startsWith("http")) videos.add(Video(url, label, url, headers))
+        }
+        val altMatch = ALT_FLASH.find(html)
+        if (altMatch != null) {
+            val url = altMatch.groupValues[1].replace("\\/", "/")
+            if (url.startsWith("http") && !url.contains("/?login")) {
+                videos.add(Video(url, "720p", url, headers))
+            }
+        }
+        return videos.distinctBy { it.url }
+    }
+
+    companion object {
+        private val VIDEO_URL = Regex("""^https://hentai4k\.com/video/[^/?#]+/[^/?#]+/?$""")
+        private val VIDEO_URL_FLASH = Regex("""video_url:\s*'([^']+)'""")
+        private val ALT_FLASH = Regex("""video_alt_url:\s*'([^']+)'""")
+        private val LABEL_FLASH = Regex("""video_url_text:\s*'([^']*)'""")
+    }
+}
