@@ -54,6 +54,9 @@ Self-hosted Aniyomi/Animetail extension repo. Signing, CI and the store index ar
 | `@JalebiBae - HentaiBros` | `extension-hentaibros/` | `...en.hentaibros` | `https://hentaibros.net` | 14.1 |
 | `@JalebiBae - EroticHentai` | `extension-erotichentai/` | `...en.erotichentai` | `https://erotic-hentai.com` | 14.1 |
 | `@JalebiBae - H-Anime` | `extension-hanime/` | `...en.hanime` | `https://h-anime.net` | 14.1 |
+| `@JalebiBae - Hentaverse` | `extension-hentaverse/` | `...en.hentaverse` | `https://hentaverse.com` | 14.1 |
+| `@JalebiBae - Oppai.Stream` | `extension-oppai/` | `...en.oppai` | `https://oppai.stream` | 14.1 |
+| `@JalebiBae - NekoPoi` | `extension-nekopoi/` | `...en.nekopoi` | `https://nekopoi.care` | 14.1 |
 
 All are NSFW (`nsfw = 1`), language `en`, extension API **14** (`versionName = "14.<code>"`).
 
@@ -100,6 +103,9 @@ Pinned source IDs (do **not** change these, or library entries orphan):
 | HentaiBros | `7289593570327561969` |
 | EroticHentai | `2582277769739202595` |
 | H-Anime | `3992978880970788141` |
+| Hentaverse | `269604309978318660` |
+| Oppai.Stream | `6464131142362638028` |
+| NekoPoi | `446061740949428455` |
 ---
 
 ## Scraping notes per site
@@ -357,10 +363,29 @@ Both use the same Next.js frontend and `nhplayer.com` player.
 - Cards `article.bs .bsx > a`; detail `/<slug>/`, episodes `.eplister li a` (`-episode-N`)
 - Video: iframe `//doodstream.cv/embed/...` → Dood JW `sources[]` MP4.
 
+### Hentaverse (Next.js)
+- Listing `/hentai`; series data is in the RSC payload (escaped `"name"/"slug"/"image"` objects)
+- Search: `/search` is client-side; module fetches `/hentai` and filters series titles locally
+- Detail `/hentai/<slug>`; episodes `/video/<slug>-episode-N`
+- Video: `og:video` / JSON-LD `contentUrl` → 1080p MP4; 720p/480p by rendition substitution.
+
+### Oppai.Stream
+- Latest/popular/search use POST `/api/search.php` (form fields `text`, `order`, `limit`, `page`, …)
+- Cards `a.episode[href^=https://oppai.stream/watch/]`; title from `img.cover[alt]`
+- Detail `/watch/<title>-N/from/...`: extract `var folder`, `storageBase`, `res`
+- Video: `<storageBase>/<folder>/ep.webm` (or `ep.mp4` when 4K format is mp4); DASH at `.../dash/manifest.mpd`.
+
+### NekoPoi
+- Browse `/hentai-list` (all series, A–Z single page); search `/?s=<q>&post_type=hentai`
+- Series detail `/hentai/<slug>`; episodes `.nk-episode-grid a.nk-episode-card`
+- Video: `playmogo.com/e/<id>` iframes → `pass_md5` + token → signed MP4 (same resolver as Hentai-JP).
+
 ---
 
 ## Not included (deliberately)
 
+- **Hentaidna.tv** — the domain redirects to `ww38.hentaidna.tv`, which no longer resolves
+  (TLS/DNS connection failure on HTTPS and HTTP). No live site to scrape.
 - **KissHentai.net** — domain is now a ParkLogic parking interstitial (soft-200 on every
   path); the old site and its `streamlare.com`/`ninjastream.to` video hosts are dead. No
   scrapeable listing or media remains.
