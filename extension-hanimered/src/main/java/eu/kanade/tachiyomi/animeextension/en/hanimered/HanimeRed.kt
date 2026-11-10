@@ -11,6 +11,7 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
+import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Request
 import okhttp3.Response
@@ -172,7 +173,11 @@ class HanimeRed : AnimeHttpSource() {
         ) ?: return emptyList()
         val url = runCatching { JSONObject(body).optString("url") }.getOrDefault("")
         if (!url.startsWith("http")) return emptyList()
-        return listOf(MediaVideo.create(url, "HD", url))
+        val videoHeaders = Headers.Builder()
+            .set("Referer", playerUrl)
+            .set("Origin", "https://nhplayer.com")
+            .build()
+        return listOf(MediaVideo.create(url, "HD", url, videoHeaders))
     }
 
     private fun fingerprint(): String {

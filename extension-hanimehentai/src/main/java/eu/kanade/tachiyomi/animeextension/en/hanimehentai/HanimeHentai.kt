@@ -12,6 +12,7 @@ import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.FormBody
+import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
@@ -163,13 +164,17 @@ class HanimeHentai : AnimeHttpSource() {
             JSONObject(payload).optJSONObject("data")?.optJSONArray("sources")
         }.getOrNull() ?: return emptyList()
 
+        val videoHeaders = Headers.Builder()
+            .set("Referer", episodeUrl)
+            .set("Origin", baseUrl)
+            .build()
         return buildList {
             for (i in 0 until sources.length()) {
                 val source = sources.optJSONObject(i) ?: continue
                 val url = source.optString("src")
                 if (!url.startsWith("http")) continue
                 val label = source.optString("label").ifBlank { "Auto" }
-                add(MediaVideo.create(url, label, url))
+                add(MediaVideo.create(url, label, url, videoHeaders))
             }
         }.distinctBy { it.url }
     }

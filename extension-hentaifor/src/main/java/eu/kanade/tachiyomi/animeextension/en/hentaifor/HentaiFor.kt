@@ -10,6 +10,7 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
+import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
@@ -129,6 +130,12 @@ class HentaiFor : AnimeHttpSource() {
         val configRaw = if (start >= 0) extractObject(embedHtml, start) else null
         val config = configRaw?.let { runCatching { JSONObject(it) }.getOrNull() } ?: return emptyList()
         val sources = config.optJSONArray("sources") ?: return emptyList()
+        val embedOrigin = Regex("^(https?://[^/]+)")
+            .find(embed)?.groupValues?.get(1) ?: "https://hentaimo.com"
+        val videoHeaders = Headers.Builder()
+            .set("Referer", embed)
+            .set("Origin", embedOrigin)
+            .build()
         return buildList {
             for (i in 0 until sources.length()) {
                 val source = sources.optJSONObject(i) ?: continue
@@ -136,7 +143,7 @@ class HentaiFor : AnimeHttpSource() {
                 if (url.startsWith("//")) url = "https:$url"
                 if (!url.startsWith("http")) continue
                 val label = source.optString("label").ifBlank { "HLS" }
-                add(MediaVideo.create(url, label, url))
+                add(MediaVideo.create(url, label, url, videoHeaders))
             }
         }.distinctBy { it.url }
     }
